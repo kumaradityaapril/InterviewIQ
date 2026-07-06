@@ -1,40 +1,74 @@
 const {GoogleGenAI} = require("@google/genai")
-const {z} = require("zod")
-const {zodToJsonSchema} = require("zod-to-json-schema")
 
 const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_API_KEY,
 })
 
-
-
-const interviewReportSchema = z.object({
-    matchScore: z.number().min(0).max(100).describe("The match score between the candidate's profile and the job description varies from 0 to 100"),
-    technicalQuestions: z.array(z.object({
-        question: z.string().describe("The technical question can be asked in the interview"),
-        intention: z.string().describe("The intention of interview behind asking this question"),
-        answer: z.string().describe("How to answer this question,what points to cover,what approach to take etc.")
-    })).describe("Technical questions that can be asked in the interview along with intention and how to answer them"),
-
-    behavioralQuestions: z.array(z.object({
-        question: z.string().describe("The behavioral question can be asked in the interview"),
-        intention: z.string().describe("The intention of interview behind asking this question"),
-        answer: z.string().describe("How to answer this question,what points to cover,what approach to take etc.")
-    })).describe("Behavioral questions that can be asked in the interview along"),
-
-    skillGaps: z.array(z.object({
-        skill: z.string().describe("The skill which the candidate is lacking"),
-        severity: z.enum(["low","medium","high"]).describe("The severity of the skill gap")
-    })).describe("List of skill gaps in the candidate's profile along with their severity"),
-
-    preparationPlan: z.array(z.object({
-        day: z.number().describe("The day for which the preparation is planed"),
-        focus: z.string().describe("The focus area for which the preparation is planed"),
-        tasks: z.array(z.string()).describe("The tasks to be completed for the preparation")
-    })).describe("The preparation plan for the candidate")
-
-
-})
+const interviewReportSchema = {
+    type: "OBJECT",
+    properties: {
+        matchScore: {
+            type: "INTEGER",
+            description: "The match score between the candidate's profile and the job description varies from 0 to 100"
+        },
+        technicalQuestions: {
+            type: "ARRAY",
+            items: {
+                type: "OBJECT",
+                properties: {
+                    question: { type: "STRING", description: "The technical question can be asked in the interview" },
+                    intention: { type: "STRING", description: "The intention of interviewer behind asking this question" },
+                    answer: { type: "STRING", description: "How to answer this question" }
+                },
+                required: ["question", "intention", "answer"]
+            },
+            description: "Technical questions that can be asked in the interview along with intention and how to answer them"
+        },
+        behavioralQuestions: {
+            type: "ARRAY",
+            items: {
+                type: "OBJECT",
+                properties: {
+                    question: { type: "STRING", description: "The behavioral question can be asked in the interview" },
+                    intention: { type: "STRING", description: "The intention of interviewer behind asking this question" },
+                    answer: { type: "STRING", description: "How to answer this question" }
+                },
+                required: ["question", "intention", "answer"]
+            },
+            description: "Behavioral questions that can be asked in the interview"
+        },
+        skillGaps: {
+            type: "ARRAY",
+            items: {
+                type: "OBJECT",
+                properties: {
+                    skill: { type: "STRING", description: "The skill which the candidate is lacking" },
+                    severity: { type: "STRING", enum: ["low", "medium", "high"], description: "The severity of the skill gap" }
+                },
+                required: ["skill", "severity"]
+            },
+            description: "List of skill gaps in the candidate's profile along with their severity"
+        },
+        preparationPlan: {
+            type: "ARRAY",
+            items: {
+                type: "OBJECT",
+                properties: {
+                    day: { type: "INTEGER", description: "The day for which the preparation is planned" },
+                    focus: { type: "STRING", description: "The focus area for which the preparation is planned" },
+                    tasks: {
+                        type: "ARRAY",
+                        items: { type: "STRING" },
+                        description: "The tasks to be completed for the preparation"
+                    }
+                },
+                required: ["day", "focus", "tasks"]
+            },
+            description: "The preparation plan for the candidate"
+        }
+    },
+    required: ["matchScore", "technicalQuestions", "behavioralQuestions", "skillGaps", "preparationPlan"]
+}
 
 async function generateInterviewReport({ resume,selfdescription,jobdescription }){
 
@@ -49,10 +83,11 @@ async function generateInterviewReport({ resume,selfdescription,jobdescription }
         contents:prompt,
         config:{
             responseMimeType:"application/json",
-            responseJsonSchema: zodToJsonSchema(interviewReportSchema)
+            responseSchema: interviewReportSchema
         }
     })
 
+    console.log("AI Response Text:", response.text)
     return JSON.parse(response.text)
 }
 
