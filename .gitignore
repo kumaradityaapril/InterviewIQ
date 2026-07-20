@@ -57,3 +57,7 @@ lerna-debug.log*
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# --- Stitch AI Workspace ---
+stitch_ai_interview_preparation_assistant/
+

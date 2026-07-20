@@ -55,7 +55,7 @@ The core feature of the application analyzes inputs to produce customized prepar
 | **REQ-REP-02** | Job Description Input | A textarea field allowing users to paste full job description details. | Implemented |
 | **REQ-REP-03** | Self Description Input | A textarea field for users to write a brief summary of their career objectives, soft skills, or extra context not listed on their resume. | Implemented |
 | **REQ-REP-04** | AI Matching Engine | Leverages the `gemini-2.5-flash` model with Google Gen AI SDK to run matching analysis. | Implemented |
-| **REQ-REP-05** | Persistent Reports | Saved to MongoDB associated with the logged-in user profile, enabling historical dashboard recall. | Implemented (Backend) |
+| **REQ-REP-05** | Persistent Reports | Saved to MongoDB associated with the logged-in user profile, enabling historical dashboard recall. | Implemented |
 
 ### 4.3 Data Schema & Report Structure
 Every generated interview report enforces a strict JSON schema via Gemini's `responseSchema` configuration:
@@ -104,7 +104,10 @@ Every generated interview report enforces a strict JSON schema via Gemini's `res
 - **AI Core**: Google Gen AI SDK (`@google/genai`) using the `gemini-2.5-flash` model.
 - **Utility**: `pdf-parse` for extract-to-text operations on resume uploads.
 
-### 5.2 Architecture Sequence Diagram
+### 5.2 Design Prototypes
+- **Stitch AI Mockups**: Interactive designs, CSS templates, and mock screens are generated in the `stitch_ai_interview_preparation_assistant/` directory. These assets are excluded from Git version control (ignored in `.gitignore`) to prevent repository bloat while keeping them accessible locally for visual and style guides.
+
+### 5.3 Architecture Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -137,7 +140,7 @@ sequenceDiagram
      - **Left Side**: Job description entry area.
      - **Right Side**: Resume file upload selector and Self Description textarea.
      - **Action**: "Generate Interview Report" CTA trigger button.
-3. **Report Presentation Page** *(Planned / Needs Design Upgrade)*:
+3. **Report Presentation Page** *(Implemented)*:
    - Visual breakdown of the **Match Score** using an animated circle/radial progress bar.
    - Expandable accordion sections for **Technical Questions** and **Behavioral Questions** detailing the *Question*, *Intention*, and *Suggested Answer*.
    - A prioritized badge-based list of **Skill Gaps** colored by severity (Red for High, Yellow for Medium, Green for Low).
