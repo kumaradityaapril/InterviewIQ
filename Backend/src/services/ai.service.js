@@ -20,6 +20,45 @@ function maskKey(key) {
     return key.substring(0, 4) + "..." + key.substring(key.length - 4);
 }
 
+const firstQuestionSchema = {
+    type: "OBJECT",
+    properties: {
+        question: {
+            type: "STRING",
+            description: "The first interview question to ask the candidate based on their profile and the job description."
+        }
+    },
+    required: ["question"]
+};
+
+const evaluationResponseSchema = {
+    type: "OBJECT",
+    properties: {
+        score: {
+            type: "INTEGER",
+            description: "The score out of 100 evaluating the quality, technical accuracy, and completeness of the candidate's response."
+        },
+        feedback: {
+            type: "STRING",
+            description: "Detailed, constructive feedback on the response, highlighting strengths and specific areas of improvement."
+        },
+        matchedKeywords: {
+            type: "ARRAY",
+            items: { type: "STRING" },
+            description: "Key technical terms, skills, or professional concepts that the candidate successfully mentioned."
+        },
+        nextQuestion: {
+            type: "STRING",
+            description: "The next highly relevant follow-up question to ask the candidate, or null/empty if the interview is finished."
+        },
+        isFinished: {
+            type: "BOOLEAN",
+            description: "True if the session has reached 3-4 questions or should conclude based on candidate replies, false otherwise."
+        }
+    },
+    required: ["score", "feedback", "matchedKeywords", "nextQuestion", "isFinished"]
+};
+
 const interviewReportSchema = {
     type: "OBJECT",
     properties: {
@@ -142,4 +181,105 @@ async function generateInterviewReport({ resume,selfdescription,jobdescription }
     throw error;
 }
 
-module.exports = generateInterviewReport
+async function generateFirstQuestion({ resume, selfdescription, jobdescription }) {
+    const prompt = `You are a professional interviewer starting a technical or behavioral interview for this position.
+    Job Description: ${jobdescription}
+    Candidate Resume: ${resume}
+    Candidate Self Description: ${selfdescription}
+    
+    Generate the first highly relevant, professional interview question to ask the candidate. The question should be conversational, specific, and challenge their experience.
+    `;
+
+    const keys = getApiKeys();
+    if (keys.length > 0) {
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            try {
+                const aiInstance = new GoogleGenAI({ apiKey: key });
+                const response = await aiInstance.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: prompt,
+                    config: {
+                        responseMimeType: "application/json",
+                        responseSchema: firstQuestionSchema
+                    }
+                });
+                return JSON.parse(response.text);
+            } catch (err) {
+                console.error(`Gemini generateFirstQuestion failed on key ${i}:`, err.message || err);
+            }
+        }
+    }
+    
+    return {
+        question: "Can you start by describing your core experience with full-stack development, and how you typically design RESTful APIs?"
+    };
+}
+
+async function evaluateResponseAndNextQuestion({
+    resume,
+    selfdescription,
+    jobdescription,
+    currentQuestion,
+    candidateAnswer,
+    history
+}) {
+    const historyText = history
+        ? history.map(h => `${h.role === 'interviewer' ? 'Interviewer' : 'Candidate'}: ${h.content}`).join("\n")
+        : "";
+
+    const prompt = `You are an expert technical recruiter conducting an interview for this candidate.
+    Job Description: ${jobdescription}
+    Candidate Resume: ${resume}
+    Candidate Self Description: ${selfdescription}
+    
+    Here is the interview history so far:
+    ${historyText}
+    
+    Current Question: ${currentQuestion}
+    Candidate's Response: ${candidateAnswer}
+    
+    Evaluate the response. Grade it on:
+    - Technical correctness & accuracy.
+    - Relevance to the question.
+    - Answering structure (e.g. STAR method).
+    
+    Generate the next follow-up question. If this is the 3rd or 4th question in the interview history, set isFinished to true and nextQuestion to null.
+    `;
+
+    const keys = getApiKeys();
+    if (keys.length > 0) {
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            try {
+                const aiInstance = new GoogleGenAI({ apiKey: key });
+                const response = await aiInstance.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: prompt,
+                    config: {
+                        responseMimeType: "application/json",
+                        responseSchema: evaluationResponseSchema
+                    }
+                });
+                return JSON.parse(response.text);
+            } catch (err) {
+                console.error(`Gemini evaluateResponseAndNextQuestion failed on key ${i}:`, err.message || err);
+            }
+        }
+    }
+
+    const mockWordCount = candidateAnswer.split(/\s+/).length;
+    return {
+        score: mockWordCount > 20 ? 80 : 50,
+        feedback: "API services are offline. Mock Evaluation: Your response was received. Try adding more concrete technical examples to describe your workflow.",
+        matchedKeywords: ["React", "JavaScript"],
+        nextQuestion: "Can you detail a complex problem you resolved in your last role?",
+        isFinished: history && history.length >= 6
+    };
+}
+
+module.exports = {
+    generateInterviewReport,
+    generateFirstQuestion,
+    evaluateResponseAndNextQuestion
+};

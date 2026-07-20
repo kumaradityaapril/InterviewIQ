@@ -40,3 +40,51 @@ export async function getReportById(id) {
         throw err;
     }
 }
+
+export async function startPracticeSession(reportId) {
+    try {
+        const response = await axios.post(`${API_URL}/practice/start`, { reportId }, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Error starting practice session:", err);
+        throw err;
+    }
+}
+
+export async function respondPracticeQuestion(payload) {
+    try {
+        const response = await axios.post(`${API_URL}/practice/respond`, payload, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Error evaluating practice response:", err);
+        throw err;
+    }
+}
+
+export async function savePracticeSession(payload) {
+    try {
+        const response = await axios.post(`${API_URL}/practice/save`, payload, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Error saving practice session:", err);
+        throw err;
+    }
+}
+
+export async function getPracticeHistory() {
+    try {
+        const response = await axios.get(`${API_URL}/practice/history`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Error fetching practice history:", err);
+        throw err;
+    }
+}

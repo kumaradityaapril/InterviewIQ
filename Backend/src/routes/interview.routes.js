@@ -7,6 +7,10 @@ const interviewRouter = express.Router()
 
 interviewRouter.post("/",authMiddleware.authUser,upload.single("resume"),interviewController.generateInterviewReportController)
 interviewRouter.get("/",authMiddleware.authUser,interviewController.getUserReportsController)
+interviewRouter.post("/practice/start",authMiddleware.authUser,interviewController.startPracticeSessionController)
+interviewRouter.post("/practice/respond",authMiddleware.authUser,interviewController.respondPracticeQuestionController)
+interviewRouter.post("/practice/save",authMiddleware.authUser,interviewController.savePracticeSessionController)
+interviewRouter.get("/practice/history",authMiddleware.authUser,interviewController.getPracticeSessionsController)
 interviewRouter.get("/:id",authMiddleware.authUser,interviewController.getReportByIdController)
 
 module.exports = interviewRouter

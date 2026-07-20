@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router'
 import { useAuth } from '../../auth/hooks/useAuth'
-import { generateReport, getReports } from '../services/interview.api'
+import { generateReport, getReports, getPracticeHistory } from '../services/interview.api'
 
 const Home = () => {
     const { user, handleLogout } = useAuth()
@@ -12,6 +12,8 @@ const Home = () => {
     const [resumeFile, setResumeFile] = useState(null)
     const [isDragging, setIsDragging] = useState(false)
     const [reportsList, setReportsList] = useState([])
+    const [practiceHistory, setPracticeHistory] = useState([])
+    const [selectedPractice, setSelectedPractice] = useState(null)
     const [submitting, setSubmitting] = useState(false)
     const [errorMsg, setErrorMsg] = useState("")
 
@@ -27,6 +29,20 @@ const Home = () => {
             }
         }
         fetchHistory()
+    }, [])
+
+    useEffect(() => {
+        const fetchPracticeSessions = async () => {
+            try {
+                const data = await getPracticeHistory()
+                if (data && data.sessions) {
+                    setPracticeHistory(data.sessions)
+                }
+            } catch (err) {
+                console.error("Failed to load practice history", err)
+            }
+        }
+        fetchPracticeSessions()
     }, [])
 
     const handleDragOver = (e) => {
@@ -141,7 +157,7 @@ const Home = () => {
             </header>
 
             {/* Main Content Area */}
-            <main className="w-full max-w-7xl mx-auto px-container-margin py-8 flex-grow space-y-12">
+            <main className="w-full max-w-7xl mx-auto px-container-margin py-8 flex-grow space-y-12 animate-fadeIn">
                 {/* Welcome Section */}
                 <section className="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center pt-4">
                     <div className="md:col-span-8 space-y-2">
@@ -280,7 +296,6 @@ const Home = () => {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                             {reportsList.map((rep) => {
-                                // Extract company & title if possible, or use fallback
                                 const firstLine = rep.jobDescription?.split('\n')[0] || "Software Engineer"
                                 const title = firstLine.length > 30 ? firstLine.substring(0, 30) + "..." : firstLine
                                 const matchScore = rep.matchScore || 0
@@ -337,7 +352,147 @@ const Home = () => {
                         </div>
                     )}
                 </section>
+
+                {/* Voice Practice Sessions History */}
+                <section className="space-y-6 pt-4">
+                    <div className="flex items-center justify-between border-b border-border-subtle pb-3">
+                        <h2 className="font-headline-md text-2xl text-on-surface font-bold">Practice History & AI Feedback</h2>
+                        <span className="font-label-technical text-label-technical text-text-muted">Total sessions: {practiceHistory.length}</span>
+                    </div>
+
+                    {practiceHistory.length === 0 ? (
+                        <div className="text-center p-12 bg-surface-container border border-border-subtle rounded-lg text-text-muted">
+                            <span className="material-symbols-outlined text-4xl mb-2">record_voice_over</span>
+                            <p className="font-body-md">No voice practice sessions recorded yet. Start a session from a report profile to log your AI evaluations!</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {practiceHistory.map((session) => {
+                                let grade = "Needs Work";
+                                let scoreColorClass = "border-status-error text-status-error";
+                                if (session.overallScore >= 80) {
+                                    grade = "Excellent";
+                                    scoreColorClass = "border-status-success text-status-success";
+                                } else if (session.overallScore >= 60) {
+                                    grade = "Good";
+                                    scoreColorClass = "border-status-warning text-status-warning";
+                                }
+
+                                return (
+                                    <div 
+                                        key={session._id}
+                                        onClick={() => setSelectedPractice(session)}
+                                        className="bg-surface-container border border-border-subtle p-6 rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer group flex flex-col justify-between"
+                                    >
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="space-y-1 pr-4">
+                                                <h3 className="font-body-lg text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">
+                                                    Voice Practice Session
+                                                </h3>
+                                                <p className="font-label-technical text-label-technical text-text-muted">
+                                                    {session.questions?.length} Questions Asked
+                                                </p>
+                                            </div>
+                                            <div className={`w-12 h-12 rounded-full border-2 ${scoreColorClass} flex items-center justify-center font-bold font-label-technical`}>
+                                                {session.overallScore}%
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <div className="flex flex-wrap gap-2">
+                                                <span className="px-2 py-0.5 rounded-sm bg-primary/10 text-primary text-[10px] font-label-technical uppercase">
+                                                    Rating: {grade}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center pt-4 border-t border-border-subtle/50">
+                                                <span className="font-label-technical text-text-muted text-[10px]">
+                                                    {formatDate(session.createdAt)}
+                                                </span>
+                                                <span className="text-primary font-bold text-xs flex items-center gap-1 group-hover:underline">
+                                                    View Feedback
+                                                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
+                </section>
             </main>
+
+            {/* Modal for practice details */}
+            {selectedPractice && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-background border border-border-subtle rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl animate-scaleUp">
+                        <div className="border-b border-border-subtle p-6 flex justify-between items-center bg-surface-container">
+                            <div>
+                                <h3 className="font-headline-md text-xl text-on-surface font-extrabold">Practice Scorecard & AI Review</h3>
+                                <p className="text-xs text-text-muted mt-1">Conducted on {formatDate(selectedPractice.createdAt)} • Overall Score: {selectedPractice.overallScore}%</p>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedPractice(null)} 
+                                className="material-symbols-outlined hover:text-primary transition-colors cursor-pointer"
+                            >
+                                close
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar flex-grow bg-background">
+                            {selectedPractice.questions?.map((q, idx) => {
+                                let grade = "Needs Work";
+                                let color = "text-status-error bg-status-error/10 border-status-error/20";
+                                if (q.score >= 80) {
+                                    grade = "Excellent";
+                                    color = "text-status-success bg-status-success/10 border-status-success/20";
+                                } else if (q.score >= 60) {
+                                    grade = "Good";
+                                    color = "text-status-warning bg-status-warning/10 border-status-warning/20";
+                                }
+
+                                return (
+                                    <div key={idx} className="border border-border-subtle rounded-xl p-5 space-y-4 bg-surface-container-low">
+                                        <div className="flex justify-between items-center border-b border-border-subtle pb-3">
+                                            <span className="font-bold text-xs text-text-muted uppercase font-label-technical">Question {idx + 1}</span>
+                                            <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-label-technical uppercase font-bold ${color}`}>
+                                                {grade} ({q.score}%)
+                                            </span>
+                                        </div>
+                                        <p className="font-body-md text-on-surface font-bold leading-snug">{q.question}</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                            <div className="p-3 bg-surface-container-lowest border border-border-subtle rounded-lg space-y-1">
+                                                <span className="font-label-caps text-[8px] tracking-wide text-text-muted font-bold">YOUR TRANSCRIPT</span>
+                                                <p className="italic text-on-surface leading-relaxed">"{q.userAnswer || "No speech recorded."}"</p>
+                                            </div>
+                                            <div className="p-3 bg-surface-container-lowest border border-border-subtle rounded-lg space-y-1">
+                                                <span className="font-label-caps text-[8px] tracking-wide text-primary font-bold">GEMINI AI FEEDBACK</span>
+                                                <p className="text-on-surface-variant leading-relaxed">{q.feedback}</p>
+                                            </div>
+                                        </div>
+                                        {q.matchedKeywords?.length > 0 && (
+                                            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                                                <span className="text-[9px] font-bold text-text-muted uppercase mr-1">Skills Hit:</span>
+                                                {q.matchedKeywords.map((kw, i) => (
+                                                    <span key={i} className="px-2 py-0.5 rounded bg-status-success/10 text-status-success border border-status-success/20 text-[9px] font-label-technical">
+                                                        {kw}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className="border-t border-border-subtle p-4 flex justify-end bg-surface-container">
+                            <button 
+                                onClick={() => setSelectedPractice(null)} 
+                                className="px-6 py-2 bg-primary text-on-primary rounded-lg font-bold text-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                            >
+                                Close Scorecard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Footer */}
             <footer className="bg-surface-container-lowest border-t border-border-subtle mt-12">

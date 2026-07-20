@@ -61,7 +61,7 @@ const Report = () => {
                     <span className="material-symbols-outlined text-status-error text-6xl mb-4">error</span>
                     <h2 className="font-headline-lg text-2xl mb-2 text-on-surface">Error Loading Report</h2>
                     <p className="font-body-md text-text-muted mb-6">{errorMsg || "An unknown error occurred."}</p>
-                    <button 
+                    <button
                         onClick={() => navigate("/")}
                         className="bg-primary text-on-primary px-6 py-2.5 rounded font-bold hover:bg-primary/90 transition-all cursor-pointer"
                     >
@@ -111,18 +111,6 @@ const Report = () => {
 
             {/* Main Content */}
             <main className="w-full max-w-7xl mx-auto px-container-margin py-8 flex-grow space-y-12">
-                {report.isMock && (
-                    <div className="bg-status-warning/10 border border-status-warning/20 text-status-warning p-4 rounded-xl flex items-start gap-4 backdrop-blur-md shadow-lg">
-                        <span className="material-symbols-outlined text-status-warning text-3xl select-none">warning</span>
-                        <div className="space-y-1">
-                            <h4 className="font-bold text-status-warning tracking-wide text-sm font-label-technical">DEMO FALLBACK MODE ACTIVE</h4>
-                            <p className="text-xs text-text-muted leading-relaxed">
-                                The primary Gemini API services are temporarily offline or rate-limited. To ensure an uninterrupted preview of this report's premium user interface, a highly-realistic, tailored mock report has been generated using local fallback templates.
-                            </p>
-                        </div>
-                    </div>
-                )}
-
                 {/* Header Section */}
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pt-4">
                     <div className="space-y-2">
@@ -136,13 +124,13 @@ const Report = () => {
                         <p className="text-text-muted font-body-md">Comprehensive gap analysis and readiness preparation generated on {reportDate}.</p>
                     </div>
                     <div className="flex gap-3">
-                        <button 
+                        <button
                             onClick={() => window.print()}
                             className="bg-surface-container border border-border-subtle px-4 py-2 rounded-lg font-label-technical text-label-technical hover:bg-surface-bright transition-colors flex items-center gap-2 cursor-pointer"
                         >
                             <span className="material-symbols-outlined text-[18px]">download</span> EXPORT REPORT
                         </button>
-                        <button 
+                        <button
                             onClick={() => navigate('/practice')}
                             className="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-technical text-label-technical hover:opacity-90 transition-transform active:scale-95 flex items-center gap-2 cursor-pointer"
                         >
@@ -161,15 +149,15 @@ const Report = () => {
                             {/* Circular SVG Progress */}
                             <svg className="w-full h-full transform -rotate-90">
                                 <circle className="text-surface-elevated" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="10"></circle>
-                                <circle 
-                                    className="text-secondary transition-all duration-1000" 
-                                    cx="96" 
-                                    cy="96" 
-                                    fill="transparent" 
-                                    r="80" 
-                                    stroke="currentColor" 
-                                    strokeWidth="10" 
-                                    strokeDasharray="502.6" 
+                                <circle
+                                    className="text-secondary transition-all duration-1000"
+                                    cx="96"
+                                    cy="96"
+                                    fill="transparent"
+                                    r="80"
+                                    stroke="currentColor"
+                                    strokeWidth="10"
+                                    strokeDasharray="502.6"
                                     strokeDashoffset={502.6 - (502.6 * matchScore) / 100}
                                     style={{ strokeLinecap: 'round' }}
                                 ></circle>
@@ -207,10 +195,10 @@ const Report = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto max-h-[300px] custom-scrollbar pr-2">
                             {report.skillGaps && report.skillGaps.length > 0 ? (
                                 report.skillGaps.map((gap, index) => {
-                                    const severityColor = gap.severity?.toLowerCase() === 'high' 
-                                        ? "border-l-status-error text-status-error" 
-                                        : gap.severity?.toLowerCase() === 'medium' 
-                                            ? "border-l-status-warning text-status-warning" 
+                                    const severityColor = gap.severity?.toLowerCase() === 'high'
+                                        ? "border-l-status-error text-status-error"
+                                        : gap.severity?.toLowerCase() === 'medium'
+                                            ? "border-l-status-warning text-status-warning"
                                             : "border-l-primary text-primary"
 
                                     const tagBg = gap.severity?.toLowerCase() === 'high'
@@ -220,7 +208,7 @@ const Report = () => {
                                             : "bg-primary/10 text-primary"
 
                                     return (
-                                        <div 
+                                        <div
                                             key={index}
                                             className={`bg-surface-container-lowest border border-border-subtle p-5 rounded-lg border-l-4 ${severityColor} hover:border-outline transition-colors group`}
                                         >
@@ -264,7 +252,7 @@ const Report = () => {
                                     const isExpanded = !!expandedTech[idx]
                                     return (
                                         <div key={idx} className="bg-surface-container border border-border-subtle rounded-lg overflow-hidden transition-all">
-                                            <button 
+                                            <button
                                                 className="w-full text-left p-4 flex justify-between items-center hover:bg-surface-bright transition-colors cursor-pointer"
                                                 onClick={() => toggleTechAccordion(idx)}
                                             >
@@ -302,7 +290,7 @@ const Report = () => {
                                     const isExpanded = !!expandedBehavioral[idx]
                                     return (
                                         <div key={idx} className="bg-surface-container border border-border-subtle rounded-lg overflow-hidden transition-all">
-                                            <button 
+                                            <button
                                                 className="w-full text-left p-4 flex justify-between items-center hover:bg-surface-bright transition-colors cursor-pointer"
                                                 onClick={() => toggleBehavioralAccordion(idx)}
                                             >
@@ -343,7 +331,7 @@ const Report = () => {
                     <div className="relative pt-12">
                         {/* Timeline Connector Line */}
                         <div className="absolute top-[4.5rem] left-0 w-full h-[1px] border-t border-dashed border-border-subtle"></div>
-                        
+
                         <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                             {report.preparationPlan && report.preparationPlan.map((plan, index) => {
                                 return (

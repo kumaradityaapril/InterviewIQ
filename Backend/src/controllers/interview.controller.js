@@ -1,6 +1,7 @@
 const pdfParse = require("pdf-parse")
-const generateInterviewReport = require("../services/ai.service")
+const { generateInterviewReport, generateFirstQuestion, evaluateResponseAndNextQuestion } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
+const practiceSessionModel = require("../models/practiceSession.model")
 
 async function generateInterviewReportController(req,res){
     try {
@@ -73,8 +74,127 @@ async function getReportByIdController(req,res){
     }
 }
 
+async function startPracticeSessionController(req, res) {
+    try {
+        const { reportId } = req.body;
+        let report = null;
+        if (reportId) {
+            report = await interviewReportModel.findOne({ _id: reportId, user: req.user.id });
+        } else {
+            report = await interviewReportModel.findOne({ user: req.user.id }).sort({ createdAt: -1 });
+        }
+
+        if (!report) {
+            return res.status(400).json({ message: "No report context found. Please generate an interview report first." });
+        }
+
+        const firstQuestionData = await generateFirstQuestion({
+            resume: report.resume,
+            selfdescription: report.selfDescription,
+            jobdescription: report.jobDescription
+        });
+
+        res.status(200).json({
+            question: firstQuestionData.question,
+            context: {
+                reportId: report._id,
+                resume: report.resume,
+                jobdescription: report.jobDescription,
+                selfdescription: report.selfDescription
+            }
+        });
+    } catch (error) {
+        console.error("Error in startPracticeSessionController:", error);
+        res.status(500).json({ message: error.message || "Failed to start practice session" });
+    }
+}
+
+async function respondPracticeQuestionController(req, res) {
+    try {
+        const { reportId, currentQuestion, candidateAnswer, history, resume, jobdescription, selfdescription } = req.body;
+
+        let contextResume = resume;
+        let contextJD = jobdescription;
+        let contextSelfDesc = selfdescription;
+
+        if (!contextResume && reportId) {
+            const report = await interviewReportModel.findOne({ _id: reportId, user: req.user.id });
+            if (report) {
+                contextResume = report.resume;
+                contextJD = report.jobDescription;
+                contextSelfDesc = report.selfDescription;
+            }
+        }
+
+        if (!contextResume) {
+            return res.status(400).json({ message: "No report context found." });
+        }
+
+        const evaluationData = await evaluateResponseAndNextQuestion({
+            resume: contextResume,
+            jobdescription: contextJD,
+            selfdescription: contextSelfDesc,
+            currentQuestion,
+            candidateAnswer,
+            history
+        });
+
+        res.status(200).json(evaluationData);
+    } catch (error) {
+        console.error("Error in respondPracticeQuestionController:", error);
+        res.status(500).json({ message: error.message || "Failed to evaluate response" });
+    }
+}
+
+async function savePracticeSessionController(req, res) {
+    try {
+        const { reportId, scorecard, overallScore } = req.body;
+
+        if (!scorecard || scorecard.length === 0) {
+            return res.status(400).json({ message: "No scorecard data provided." });
+        }
+
+        const formattedQuestions = scorecard.map(item => ({
+            question: item.question,
+            userAnswer: item.response || "",
+            score: item.score || 0,
+            feedback: item.feedback || "",
+            matchedKeywords: item.keywords || []
+        }));
+
+        const newSession = new practiceSessionModel({
+            user: req.user.id,
+            report: reportId || null,
+            overallScore: overallScore || 0,
+            questions: formattedQuestions
+        });
+
+        await newSession.save();
+        res.status(201).json({ message: "Practice session saved successfully", session: newSession });
+    } catch (error) {
+        console.error("Error in savePracticeSessionController:", error);
+        res.status(500).json({ message: error.message || "Failed to save practice session" });
+    }
+}
+
+async function getPracticeSessionsController(req, res) {
+    try {
+        const sessions = await practiceSessionModel.find({ user: req.user.id })
+            .sort({ createdAt: -1 })
+            .populate("report");
+        res.status(200).json({ sessions });
+    } catch (error) {
+        console.error("Error in getPracticeSessionsController:", error);
+        res.status(500).json({ message: error.message || "Failed to fetch practice sessions" });
+    }
+}
+
 module.exports = {
     generateInterviewReportController,
     getUserReportsController,
-    getReportByIdController
+    getReportByIdController,
+    startPracticeSessionController,
+    respondPracticeQuestionController,
+    savePracticeSessionController,
+    getPracticeSessionsController
 }
