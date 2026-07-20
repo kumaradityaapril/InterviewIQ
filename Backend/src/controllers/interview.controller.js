@@ -37,7 +37,8 @@ async function generateInterviewReportController(req,res){
         })
     } catch (error) {
         console.error("Error in generateInterviewReportController:", error)
-        res.status(500).json({
+        const statusCode = error.statusCode || 500
+        res.status(statusCode).json({
             message: error.message || "Failed to generate interview report"
         })
     }
@@ -45,4 +46,35 @@ async function generateInterviewReportController(req,res){
 
 
 
-module.exports = {generateInterviewReportController}
+async function getUserReportsController(req,res){
+    try {
+        const reports = await interviewReportModel.find({ user: req.user.id }).sort({ createdAt: -1 })
+        res.status(200).json({ reports })
+    } catch (error) {
+        console.error("Error in getUserReportsController:", error)
+        res.status(500).json({
+            message: error.message || "Failed to fetch user reports"
+        })
+    }
+}
+
+async function getReportByIdController(req,res){
+    try {
+        const report = await interviewReportModel.findOne({ _id: req.params.id, user: req.user.id })
+        if (!report) {
+            return res.status(404).json({ message: "Report not found" })
+        }
+        res.status(200).json({ report })
+    } catch (error) {
+        console.error("Error in getReportByIdController:", error)
+        res.status(500).json({
+            message: error.message || "Failed to fetch report details"
+        })
+    }
+}
+
+module.exports = {
+    generateInterviewReportController,
+    getUserReportsController,
+    getReportByIdController
+}

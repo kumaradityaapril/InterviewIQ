@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InterviewIQ | Focused Practice Session</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #2D2D30;
+        }
+        .active-pulse {
+            position: relative;
+        }
+        .active-pulse::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10B981;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            70% { transform: scale(1.1); opacity: 0.2; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .writing-indicator {
+            display: inline-flex;
+            gap: 2px;
+        }
+        .writing-indicator span {
+            width: 4px;
+            height: 4px;
+            background: #adc6ff;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .writing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .writing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#131314",
+                        "outline": "#8c909f",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "on-primary": "#002e6a",
+                        "on-secondary-container": "#00686f",
+                        "on-primary-fixed": "#001a42",
+                        "secondary": "#d3fbff",
+                        "surface-container-high": "#2a2a2b",
+                        "on-surface": "#e5e2e3",
+                        "status-success": "#10B981",
+                        "on-primary-fixed-variant": "#004395",
+                        "outline-variant": "#424754",
+                        "tertiary-container": "#df7412",
+                        "status-warning": "#F59E0B",
+                        "error": "#ffb4ab",
+                        "status-error": "#EF4444",
+                        "on-secondary": "#00363a",
+                        "on-secondary-fixed": "#002022",
+                        "tertiary": "#ffb786",
+                        "border-subtle": "#2D2D30",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-bright": "#3a393a",
+                        "inverse-surface": "#e5e2e3",
+                        "surface-variant": "#353436",
+                        "surface-elevated": "#27272A",
+                        "on-tertiary-container": "#461f00",
+                        "secondary-fixed-dim": "#00dbe9",
+                        "secondary-container": "#00eefc",
+                        "surface-container": "#18181B",
+                        "on-tertiary": "#502400",
+                        "surface-tint": "#adc6ff",
+                        "primary-container": "#4d8eff",
+                        "on-primary-container": "#00285d",
+                        "on-error": "#690005",
+                        "inverse-primary": "#005ac2",
+                        "inverse-on-surface": "#313031",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-container-lowest": "#0e0e0f",
+                        "text-muted": "#A1A1AA",
+                        "on-background": "#e5e2e3",
+                        "surface": "#131314",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-dim": "#131314",
+                        "secondary-fixed": "#7df4ff",
+                        "on-secondary-fixed-variant": "#004f54",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-tertiary-fixed": "#311400",
+                        "primary": "#adc6ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-highest": "#353436"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Geist"],
+                        "label-technical": ["JetBrains Mono"],
+                        "body-sm": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "body-md": ["Geist"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col selection:bg-primary/30">
+<!-- TopNavBar -->
+<header class="bg-background text-primary docked full-width top-0 border-b border-border-subtle flat no shadows flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto z-50">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">InterviewIQ</h1>
+<nav class="hidden md:flex gap-6 items-center h-full pt-1">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Dashboard</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Reports</a>
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary pb-1" href="#">Practice</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Resources</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="settings">settings</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-border-subtle">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged female software engineer in a modern, dark-themed office environment. The lighting is soft and directional, creating a high-end corporate aesthetic. The background is a blurred view of a tech workspace with minimalist furniture and cool blue accent lights. The overall mood is focused and authoritative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRTGYcdNrHfO0o7VKVVzlADVjDzmVhBTS6AE6s-vmGTR07JPGvYE4FsdI5H1WrYYbZ8psZa7ay-wLrF2Dc9CzwscD7yjuXTYWMBA5LWesD5T2TkmT8roWe2KUbqk__pF8VjXc3kl6nd4tgWDejW1NDZMHH9TbVHTqNoCElnFTxkU-rkRB8kmUMgNxVDCGT8kmF4HtkSexsetSrMFGgI4LMzWIjEb2YU6gdess2pVIPkwhMxqdZc0xMvdsNJd-m_E7VdgojuvRiXg"/>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-7xl mx-auto px-container-margin py-8 flex flex-col md:flex-row gap-6">
+<!-- Main Content Area -->
+<section class="flex-grow flex flex-col gap-6 w-full md:w-2/3 lg:w-3/4">
+<!-- AI Interviewer Card -->
+<div class="glass-panel rounded-xl p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
+<!-- Subtle background ambient shader -->
+
+<div class="relative z-10 w-full md:w-48 shrink-0">
+<div class="aspect-square rounded-lg bg-surface-container-highest border border-border-subtle overflow-hidden flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A professional digital avatar of a male interviewer in his late 30s wearing a tailored charcoal suit and a crisp white shirt. The style is clean and photorealistic, not robotic, set against a neutral, high-end gradient background. The expression is attentive and encouraging, designed for a professional diagnostic tool interface. Cinematic lighting with subtle blue tints." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrDRkH0zECs4mEQrC__S36AJ_OH0ZHXr2LSu1bygiMWE_g3AvUUQjJj0yqfaU2ApuDXOT6Pu4xC9uK2NqKMBtGuLY9i5aSk_4wMURjEw0OPr29whQmhe7feQES8nVMHfT9nb5g395PM3i-awJP7OQI6mkEYZAoJizo0aSv87UWYSlwsrLEhQwJf3scHnHKHw6DwrMGd0abDNnSy4T8LNB4DbhuZZy5gAw30FQR1Z24mKnz8SrV6W5SwyBJHJcgElTwS0R8oPxaIw"/>
+</div>
+<div class="mt-3 flex items-center justify-center gap-2">
+<div class="w-2 h-2 rounded-full bg-status-success animate-pulse"></div>
+<span class="font-label-technical text-label-technical text-status-success uppercase tracking-widest">Live: AI Interviewer</span>
+</div>
+</div>
+<div class="relative z-10 flex-grow flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<span class="font-label-technical text-label-technical text-primary">QUESTION 4 OF 8</span>
+<div class="flex-grow h-px bg-border-subtle"></div>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface leading-tight">
+                        Can you describe a situation where you had to reconcile conflicting priorities from different stakeholders? How did you handle it?
+                    </h2>
+<div class="flex items-center gap-3 mt-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="volume_up">volume_up</span>
+<div class="h-4 flex items-center gap-0.5">
+<div class="w-1 h-3 bg-primary/40 rounded-full"></div>
+<div class="w-1 h-5 bg-primary/60 rounded-full"></div>
+<div class="w-1 h-2 bg-primary/30 rounded-full"></div>
+<div class="w-1 h-6 bg-primary rounded-full"></div>
+<div class="w-1 h-4 bg-primary/50 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Response / Transcript Area -->
+<div class="flex-grow glass-panel rounded-xl flex flex-col">
+<div class="border-b border-border-subtle px-6 py-3 flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="record_voice_over">record_voice_over</span>
+<span class="font-label-technical text-label-technical">REAL-TIME TRANSCRIPT</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-label-technical text-label-technical text-text-muted">STATUS: LISTENING</span>
+<div class="writing-indicator">
+<span></span><span></span><span></span>
+</div>
+</div>
+</div>
+<div class="p-8 flex-grow overflow-y-auto max-h-[400px] space-y-4">
+<p class="text-on-surface-variant font-body-md leading-relaxed">
+                        In my previous role at QuantEdge, we faced a critical deadline for the Q3 release. Our Product Manager wanted to push three new features, but the Engineering Lead was concerned about technical debt and system stability. 
+                    </p>
+<p class="text-on-surface font-body-md leading-relaxed border-l-2 border-primary pl-4 py-1 bg-primary/5">
+                        I scheduled a tri-party meeting to map out the impact of each feature. By analyzing our telemetry data, I demonstrated that Feature A was vital for 70% of users, while C could be deferred. This evidence-based approach helped us align on a phased rollout plan that satisfied both technical and business requirements...
+                    </p>
+</div>
+</div>
+<!-- Control Bar -->
+<div class="flex items-center justify-center gap-4 p-4">
+<button class="w-14 h-14 rounded-full flex items-center justify-center bg-surface-container-high border border-border-subtle hover:bg-surface-bright transition-all group active:scale-95">
+<span class="material-symbols-outlined text-on-surface group-hover:text-primary" data-icon="mic_off">mic_off</span>
+</button>
+<button class="w-14 h-14 rounded-full flex items-center justify-center bg-surface-container-high border border-border-subtle hover:bg-surface-bright transition-all group active:scale-95">
+<span class="material-symbols-outlined text-on-surface group-hover:text-primary" data-icon="videocam">videocam</span>
+</button>
+<button class="px-8 h-14 rounded-full flex items-center justify-center bg-status-error text-white font-bold hover:brightness-110 transition-all active:scale-95 gap-2">
+<span class="material-symbols-outlined" data-icon="call_end">call_end</span>
+                    End Session
+                </button>
+<button class="w-14 h-14 rounded-full flex items-center justify-center bg-surface-container-high border border-border-subtle hover:bg-surface-bright transition-all group active:scale-95">
+<span class="material-symbols-outlined text-on-surface group-hover:text-primary" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+</section>
+<!-- Sidebar: Real-time Insights -->
+<aside class="w-full md:w-1/3 lg:w-1/4 flex flex-col gap-6">
+<!-- Analysis Widget: Pacing -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="font-label-technical text-label-technical text-text-muted">PACING ANALYSIS</span>
+<span class="material-symbols-outlined text-status-success text-sm" data-icon="check_circle">check_circle</span>
+</div>
+<div class="flex items-end gap-1 h-12">
+<!-- Fake waveform animation -->
+<div class="flex-grow bg-primary/20 h-4 rounded-t-sm"></div>
+<div class="flex-grow bg-primary/40 h-8 rounded-t-sm"></div>
+<div class="flex-grow bg-primary/60 h-10 rounded-t-sm"></div>
+<div class="flex-grow bg-primary h-6 rounded-t-sm"></div>
+<div class="flex-grow bg-primary/70 h-9 rounded-t-sm"></div>
+<div class="flex-grow bg-primary/30 h-5 rounded-t-sm"></div>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="font-headline-md text-headline-md font-bold">142</span>
+<span class="font-label-technical text-label-technical text-on-surface-variant">WORDS / MIN</span>
+</div>
+<p class="font-label-technical text-[10px] text-on-surface-variant leading-tight">
+                    Optimal range (130-150). You are currently maintaining a professional and composed tempo.
+                </p>
+</div>
+<!-- Analysis Widget: STAR Method -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="font-label-technical text-label-technical text-text-muted">STAR METHOD DETECTION</span>
+<span class="material-symbols-outlined text-status-warning text-sm" data-icon="insights">insights</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-status-success/20 border border-status-success/30 flex items-center justify-center font-bold text-status-success text-xs">S</div>
+<div class="flex-grow">
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-status-success w-full"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-status-success/20 border border-status-success/30 flex items-center justify-center font-bold text-status-success text-xs">T</div>
+<div class="flex-grow">
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-status-success w-full"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/20 border border-primary/30 flex items-center justify-center font-bold text-primary text-xs active-pulse">A</div>
+<div class="flex-grow">
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3 transition-all duration-1000"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest border border-border-subtle flex items-center justify-center font-bold text-text-muted text-xs">R</div>
+<div class="flex-grow">
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-0"></div>
+</div>
+</div>
+</div>
+</div>
+<p class="font-label-technical text-[10px] text-on-surface-variant leading-tight">
+                    Structure detected. You've successfully established the Situation and Task. Currently detailing the <span class="text-primary">Action</span>.
+                </p>
+</div>
+<!-- Keyword Tracking -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-4">
+<span class="font-label-technical text-label-technical text-text-muted uppercase">Keyword Tracking</span>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-primary/10 border border-primary/30 rounded text-primary text-[10px] font-label-technical">Stakeholders</span>
+<span class="px-2 py-1 bg-primary/10 border border-primary/30 rounded text-primary text-[10px] font-label-technical">Alignment</span>
+<span class="px-2 py-1 bg-primary/10 border border-primary/30 rounded text-primary text-[10px] font-label-technical">Data-Driven</span>
+<span class="px-2 py-1 bg-surface-container-highest border border-border-subtle rounded text-text-muted text-[10px] font-label-technical">Scalability</span>
+<span class="px-2 py-1 bg-surface-container-highest border border-border-subtle rounded text-text-muted text-[10px] font-label-technical">Agile</span>
+</div>
+</div>
+<!-- Match Score Hero -->
+<div class="mt-auto glass-panel rounded-xl p-6 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-technical text-label-technical text-primary">LIVE MATCH SCORE</span>
+<span class="material-symbols-outlined text-primary" data-icon="bolt">bolt</span>
+</div>
+<div class="relative w-32 h-32 mx-auto flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-surface-elevated" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-secondary-fixed-dim" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="65.6" stroke-width="8" style="transition: stroke-dashoffset 1.2s ease-out;"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-bold font-headline-md">82</span>
+<span class="text-[10px] font-label-technical text-on-surface-variant">PERCENT</span>
+</div>
+</div>
+<div class="mt-4 text-center">
+<span class="font-label-technical text-label-technical text-secondary-fixed-dim">High Relevancy Detected</span>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest text-primary full-width border-t border-border-subtle flex flex-col md:flex-row justify-between items-center py-8 px-container-margin w-full max-w-7xl mx-auto gap-4 mt-12">
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">InterviewIQ</span>
+<span class="text-text-muted font-label-technical text-label-technical">|</span>
+<span class="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. Technical Excellence.</span>
+</div>
+<div class="flex gap-6">
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Contact Support</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Security</a>
+</div>
+</footer>
+<script>
+        // Simple interactivity for demonstration
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.add('scale-95');
+                setTimeout(() => this.classList.remove('scale-95'), 100);
+            });
+        });
+
+        // Simulating transcript scroll and keyword updates
+        const transcriptArea = document.querySelector('.overflow-y-auto');
+        if (transcriptArea) {
+            transcriptArea.scrollTop = transcriptArea.scrollHeight;
+        }
+    </script>
+</body></html>

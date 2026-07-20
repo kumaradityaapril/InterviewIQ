@@ -86,6 +86,11 @@ const InterviewReportSchema = mongoose.Schema({
     skillGaps: [skillGapSchema],
     preparationPlan: [preparationPlanSchema],
 
+    isMock: {
+        type: Boolean,
+        default: false
+    },
+
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"users"

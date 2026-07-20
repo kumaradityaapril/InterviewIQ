@@ -54,12 +54,23 @@ export const useAuth = () => {
 
     useEffect(()=>{
         const getAndSetUser = async() => {
-            const data = await getMe()
-            setUser(data.user)
-            setLoading(false)
+            try {
+                const data = await getMe()
+                if (data && data.user) {
+                    setUser(data.user)
+                } else {
+                    setUser(null)
+                }
+            } catch (err) {
+                console.error("Session restoration failed:", err)
+                setUser(null)
+            } finally {
+                setLoading(false)
+            }
         }
         getAndSetUser()
     },[])
+
 
     return {user,Loading,handleRegister,handleLogin,handleLogout } 
 

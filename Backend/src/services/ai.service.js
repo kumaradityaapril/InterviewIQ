@@ -1,8 +1,24 @@
 const {GoogleGenAI} = require("@google/genai")
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GOOGLE_API_KEY,
-})
+function getApiKeys() {
+    const keys = [];
+    if (process.env.GOOGLE_API_KEY) {
+        keys.push(process.env.GOOGLE_API_KEY.trim());
+    }
+    if (process.env.GOOGLE_API_KEY_FALLBACK) {
+        keys.push(...process.env.GOOGLE_API_KEY_FALLBACK.split(",").map(k => k.trim()).filter(Boolean));
+    }
+    if (process.env.GOOGLE_API_KEYS) {
+        keys.push(...process.env.GOOGLE_API_KEYS.split(",").map(k => k.trim()).filter(Boolean));
+    }
+    return [...new Set(keys)];
+}
+
+function maskKey(key) {
+    if (!key) return "undefined";
+    if (key.length <= 8) return "***";
+    return key.substring(0, 4) + "..." + key.substring(key.length - 4);
+}
 
 const interviewReportSchema = {
     type: "OBJECT",
@@ -78,17 +94,52 @@ async function generateInterviewReport({ resume,selfdescription,jobdescription }
     Job Description: ${jobdescription}
     `
 
-    const response = await ai.models.generateContent({
-        model:"gemini-2.5-flash",
-        contents:prompt,
-        config:{
-            responseMimeType:"application/json",
-            responseSchema: interviewReportSchema
-        }
-    })
+    const keys = getApiKeys();
+    let lastError = null;
 
-    console.log("AI Response Text:", response.text)
-    return JSON.parse(response.text)
+    if (keys.length > 0) {
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            try {
+                console.log(`Attempting report generation with API Key [${i + 1}/${keys.length}]: ${maskKey(key)}`);
+                const aiInstance = new GoogleGenAI({ apiKey: key });
+
+                const response = await aiInstance.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: prompt,
+                    config: {
+                        responseMimeType: "application/json",
+                        responseSchema: interviewReportSchema
+                    }
+                });
+
+                console.log("AI Response generated successfully using Gemini API.");
+                const result = JSON.parse(response.text);
+                return {
+                    ...result,
+                    isMock: false
+                };
+            } catch (err) {
+                console.error(`Gemini API key [${maskKey(key)}] failed:`, err.message || err);
+                lastError = err;
+                // Fall through to next iteration
+            }
+        }
+    } else {
+        console.warn("No Gemini API keys configured in environment variables.");
+    }
+
+    const mockFallbackEnabled = process.env.MOCK_FALLBACK !== "false";
+    if (mockFallbackEnabled) {
+        console.warn("All Gemini API keys failed or none provided. Falling back to dynamic Mock service.");
+        const generateMockReport = require("./mock.service");
+        return generateMockReport({ resume, selfdescription, jobdescription });
+    }
+
+    const error = new Error("Gemini AI API service is temporarily unavailable (all keys exhausted/expired).");
+    error.name = "AiServiceUnavailableError";
+    error.statusCode = 503;
+    throw error;
 }
 
 module.exports = generateInterviewReport

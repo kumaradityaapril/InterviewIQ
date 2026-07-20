@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InterviewIQ | Interview Preparation Report</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .radial-progress {
+            transition: stroke-dashoffset 1.2s ease-out;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #131314;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2D2D30;
+            border-radius: 10px;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-open .accordion-content {
+            max-height: 500px;
+        }
+        .accordion-open .chevron-icon {
+            transform: rotate(90deg);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#131314",
+                        "outline": "#8c909f",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "on-primary": "#002e6a",
+                        "on-secondary-container": "#00686f",
+                        "on-primary-fixed": "#001a42",
+                        "secondary": "#d3fbff",
+                        "surface-container-high": "#2a2a2b",
+                        "on-surface": "#e5e2e3",
+                        "status-success": "#10B981",
+                        "on-primary-fixed-variant": "#004395",
+                        "outline-variant": "#424754",
+                        "tertiary-container": "#df7412",
+                        "status-warning": "#F59E0B",
+                        "error": "#ffb4ab",
+                        "status-error": "#EF4444",
+                        "on-secondary": "#00363a",
+                        "on-secondary-fixed": "#002022",
+                        "tertiary": "#ffb786",
+                        "border-subtle": "#2D2D30",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-bright": "#3a393a",
+                        "inverse-surface": "#e5e2e3",
+                        "surface-variant": "#353436",
+                        "surface-elevated": "#27272A",
+                        "on-tertiary-container": "#461f00",
+                        "secondary-fixed-dim": "#00dbe9",
+                        "secondary-container": "#00eefc",
+                        "surface-container": "#18181B",
+                        "on-tertiary": "#502400",
+                        "surface-tint": "#adc6ff",
+                        "primary-container": "#4d8eff",
+                        "on-primary-container": "#00285d",
+                        "on-error": "#690005",
+                        "inverse-primary": "#005ac2",
+                        "inverse-on-surface": "#313031",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-container-lowest": "#0e0e0f",
+                        "text-muted": "#A1A1AA",
+                        "on-background": "#e5e2e3",
+                        "surface": "#131314",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-dim": "#131314",
+                        "secondary-fixed": "#7df4ff",
+                        "on-secondary-fixed-variant": "#004f54",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-tertiary-fixed": "#311400",
+                        "primary": "#adc6ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-highest": "#353436"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-margin": "24px",
+                        "unit": "8px",
+                        "section-gap": "48px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Geist"],
+                        "label-technical": ["JetBrains Mono"],
+                        "body-sm": ["Geist"],
+                        "display-hero": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "label-technical": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md custom-scrollbar">
+<!-- Top Navigation Bar -->
+<nav class="bg-background dark:bg-background border-b border-border-subtle flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto z-50 sticky top-0">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface tracking-tight">InterviewIQ</span>
+<div class="hidden md:flex gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Dashboard</a>
+<a class="font-body-md text-body-md text-primary dark:text-primary border-b-2 border-primary pb-1" href="#">Reports</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Practice</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional user profile avatar for a technical recruiter or candidate, presented in a minimalist high-contrast style. The image features a clean, stylized silhouette against a dark, sophisticated geometric background with subtle cyan accents. The overall aesthetic is pro-grade, modern, and aligned with a technical excellence theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZpx6wZFJ75TW-uc_LX36Zqi_nqyPKYr0H8uLBmSQjJlOza7M0hteaMYR8ZZOPx03ep60V3NQX9ePgZLjyT_JgIJ-8TjlWyviIOFby3wreIBTiDxdqd_x2WTkNI6nA46VxKo9ct3xTTm59kQHZFBp4yQEtwzmJK8OsEasCsugEDo2yZ2IXscg5jJsEQUmdvpkpv28mmUMhxDjfOQW93YyMDJ4a5TuW-KS88Ghc1JYKp4cfEkegNIUbqBpyEXO7bEmRHASPZEEqLg"/>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-container-margin py-unit * 6 space-y-12">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pt-8">
+<div class="space-y-2">
+<div class="flex items-center gap-2 text-primary font-label-technical text-label-technical">
+<span class="material-symbols-outlined text-[16px]">analytics</span>
+                    ANALYSIS REPORT #8821
+                </div>
+<h1 class="font-headline-lg text-headline-lg">Analysis for Senior Software Engineer at <span class="text-primary">QuantMetrics AI</span></h1>
+<p class="text-text-muted font-body-md">Comprehensive gap analysis and readiness preparation generated on October 24, 2024.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container border border-border-subtle px-4 py-2 rounded-lg font-label-technical text-label-technical hover:bg-surface-bright transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span> EXPORT PDF
+                </button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-technical text-label-technical hover:opacity-90 transition-transform active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">play_circle</span> START SIMULATION
+                </button>
+</div>
+</header>
+<!-- Bento Grid: Score & Technical Gaps -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Radial Match Score -->
+<div class="md:col-span-4 bg-surface-container border border-border-subtle p-8 rounded-xl flex flex-col items-center justify-center relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary-fixed-dim to-primary"></div>
+<h3 class="font-label-caps text-label-caps text-text-muted mb-8 self-start">OVERALL MATCH SCORE</h3>
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- Background Circle -->
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-elevated" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-width="12"></circle>
+<!-- Progress Circle -->
+<circle class="text-secondary-fixed-dim radial-progress" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-dasharray="552.9" stroke-dashoffset="110.5" stroke-width="12" style="stroke-linecap: round;"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-hero text-display-hero text-on-surface">82<span class="text-headline-md">%</span></span>
+<span class="font-label-technical text-label-technical text-status-success">STRONG MATCH</span>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4 w-full">
+<div class="text-center p-3 bg-surface-container-low rounded-lg border border-border-subtle">
+<div class="text-text-muted font-label-caps text-label-caps">CULTURAL</div>
+<div class="font-label-technical text-label-technical text-on-surface">94%</div>
+</div>
+<div class="text-center p-3 bg-surface-container-low rounded-lg border border-border-subtle">
+<div class="text-text-muted font-label-caps text-label-caps">TECHNICAL</div>
+<div class="font-label-technical text-label-technical text-on-surface">71%</div>
+</div>
+</div>
+</div>
+<!-- Technical Gaps -->
+<div class="md:col-span-8 bg-surface-container border border-border-subtle p-8 rounded-xl flex flex-col gap-6">
+<div class="flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-text-muted">PRIORITY TECHNICAL GAPS</h3>
+<div class="flex gap-2">
+<span class="flex items-center gap-1 font-label-technical text-label-technical text-status-error bg-status-error/10 px-2 py-1 rounded">High: 1</span>
+<span class="flex items-center gap-1 font-label-technical text-label-technical text-status-warning bg-status-warning/10 px-2 py-1 rounded">Med: 2</span>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Gap Card: High -->
+<div class="bg-surface-container-lowest border border-border-subtle p-5 rounded-lg border-l-4 border-l-status-error hover:border-outline transition-colors group">
+<div class="flex justify-between mb-3">
+<span class="font-label-technical text-label-technical text-status-error">HIGH SEVERITY</span>
+<span class="material-symbols-outlined text-text-muted group-hover:text-primary transition-colors cursor-pointer">arrow_forward</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-2">Distributed Systems Latency</h4>
+<p class="text-text-muted font-body-sm mb-4">Resume lacks specific examples of handling high-throughput P99 latency issues required for this trading platform role.</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-elevated text-on-surface-variant font-label-technical text-label-technical px-2 py-1 rounded">Kafka</span>
+<span class="bg-surface-elevated text-on-surface-variant font-label-technical text-label-technical px-2 py-1 rounded">gRPC</span>
+</div>
+</div>
+<!-- Gap Card: Medium -->
+<div class="bg-surface-container-lowest border border-border-subtle p-5 rounded-lg border-l-4 border-l-status-warning hover:border-outline transition-colors group">
+<div class="flex justify-between mb-3">
+<span class="font-label-technical text-label-technical text-status-warning">MEDIUM SEVERITY</span>
+<span class="material-symbols-outlined text-text-muted group-hover:text-primary transition-colors cursor-pointer">arrow_forward</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-2">Kubernetes Orchestration</h4>
+<p class="text-text-muted font-body-sm mb-4">Under-indexed on Custom Resource Definitions (CRDs) and Operator patterns compared to JD requirements.</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-elevated text-on-surface-variant font-label-technical text-label-technical px-2 py-1 rounded">K8s</span>
+<span class="bg-surface-elevated text-on-surface-variant font-label-technical text-label-technical px-2 py-1 rounded">Helm</span>
+</div>
+</div>
+<!-- Gap Card: Medium -->
+<div class="bg-surface-container-lowest border border-border-subtle p-5 rounded-lg border-l-4 border-l-status-warning hover:border-outline transition-colors group">
+<div class="flex justify-between mb-3">
+<span class="font-label-technical text-label-technical text-status-warning">MEDIUM SEVERITY</span>
+<span class="material-symbols-outlined text-text-muted group-hover:text-primary transition-colors cursor-pointer">arrow_forward</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-2">Rust Performance Tuning</h4>
+<p class="text-text-muted font-body-sm mb-4">General Rust proficiency found, but memory profiling and unsafe blocks for performance optimization are missing.</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-elevated text-on-surface-variant font-label-technical text-label-technical px-2 py-1 rounded">Rust</span>
+<span class="bg-surface-elevated text-on-surface-variant font-label-technical text-label-technical px-2 py-1 rounded">Profiling</span>
+</div>
+</div>
+<!-- Gap Card: Low -->
+<div class="bg-surface-container-lowest border border-border-subtle p-5 rounded-lg border-l-4 border-l-primary hover:border-outline transition-colors group">
+<div class="flex justify-between mb-3">
+<span class="font-label-technical text-label-technical text-primary">LOW SEVERITY</span>
+<span class="material-symbols-outlined text-text-muted group-hover:text-primary transition-colors cursor-pointer">arrow_forward</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-2">Lead Exp. Refinement</h4>
+<p class="text-text-muted font-body-sm mb-4">Mentioned mentoring but needs clearer metrics on team velocity improvements under your guidance.</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-elevated text-on-surface-variant font-label-technical text-label-technical px-2 py-1 rounded">Leadership</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Q&A Section -->
+<section class="space-y-6">
+<h3 class="font-label-caps text-label-caps text-text-muted">STRATEGIC PREPARATION FOLDERS</h3>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Technical Q&A -->
+<div class="space-y-4">
+<div class="flex items-center gap-3 px-2">
+<span class="material-symbols-outlined text-primary" data-weight="fill">code</span>
+<h4 class="font-headline-md text-headline-md">Technical Deep-Dive</h4>
+</div>
+<div class="space-y-2">
+<!-- Accordion 1 -->
+<div class="bg-surface-container border border-border-subtle rounded-lg overflow-hidden accordion-item">
+<button class="w-full text-left p-4 flex justify-between items-center hover:bg-surface-bright transition-colors" onclick="toggleAccordion(this)">
+<span class="font-body-md text-body-md font-semibold text-on-surface">Explain the 'CAP Theorem' in the context of our distributed ledger.</span>
+<span class="material-symbols-outlined text-text-muted chevron-icon transition-transform">chevron_right</span>
+</button>
+<div class="accordion-content bg-surface-container-low border-t border-border-subtle">
+<div class="p-6 space-y-4">
+<div>
+<div class="font-label-technical text-label-technical text-primary mb-1 uppercase">Interviewer Intent</div>
+<p class="text-text-muted font-body-sm">Assessing your ability to make trade-offs between consistency and availability in a high-stakes environment.</p>
+</div>
+<div>
+<div class="font-label-technical text-label-technical text-secondary-fixed-dim mb-1 uppercase">Strategy</div>
+<p class="text-on-surface font-body-sm">Focus on 'Eventual Consistency' models. Reference your work at 'Previous Co' where you prioritized availability during peak traffic spikes.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Accordion 2 -->
+<div class="bg-surface-container border border-border-subtle rounded-lg overflow-hidden accordion-item">
+<button class="w-full text-left p-4 flex justify-between items-center hover:bg-surface-bright transition-colors" onclick="toggleAccordion(this)">
+<span class="font-body-md text-body-md font-semibold text-on-surface">How do you profile a memory leak in a production Rust binary?</span>
+<span class="material-symbols-outlined text-text-muted chevron-icon transition-transform">chevron_right</span>
+</button>
+<div class="accordion-content bg-surface-container-low border-t border-border-subtle">
+<div class="p-6 space-y-4">
+<div>
+<div class="font-label-technical text-label-technical text-primary mb-1 uppercase">Interviewer Intent</div>
+<p class="text-text-muted font-body-sm">Validating low-level systems knowledge and familiarity with tooling like Valgrind or Heaptrack.</p>
+</div>
+<div>
+<div class="font-label-technical text-label-technical text-secondary-fixed-dim mb-1 uppercase">Strategy</div>
+<p class="text-on-surface font-body-sm">Mention specific tools (Valgrind, cargo-bloat) and the methodology of 'Isolate, Reproduce, and Patch'.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Behavioral Q&A -->
+<div class="space-y-4">
+<div class="flex items-center gap-3 px-2">
+<span class="material-symbols-outlined text-tertiary" data-weight="fill">psychology</span>
+<h4 class="font-headline-md text-headline-md">Behavioral &amp; Values</h4>
+</div>
+<div class="space-y-2">
+<!-- Accordion 3 -->
+<div class="bg-surface-container border border-border-subtle rounded-lg overflow-hidden accordion-item">
+<button class="w-full text-left p-4 flex justify-between items-center hover:bg-surface-bright transition-colors" onclick="toggleAccordion(this)">
+<span class="font-body-md text-body-md font-semibold text-on-surface">Describe a time you disagreed with a technical decision from leadership.</span>
+<span class="material-symbols-outlined text-text-muted chevron-icon transition-transform">chevron_right</span>
+</button>
+<div class="accordion-content bg-surface-container-low border-t border-border-subtle">
+<div class="p-6 space-y-4">
+<div>
+<div class="font-label-technical text-label-technical text-primary mb-1 uppercase">Interviewer Intent</div>
+<p class="text-text-muted font-body-sm">Looking for professional maturity, data-driven reasoning, and 'disagree and commit' philosophy.</p>
+</div>
+<div>
+<div class="font-label-technical text-label-technical text-secondary-fixed-dim mb-1 uppercase">Strategy</div>
+<p class="text-on-surface font-body-sm">Use the STAR method. Focus on the data you presented, how you handled the rejection, and the successful outcome of the final project.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Accordion 4 -->
+<div class="bg-surface-container border border-border-subtle rounded-lg overflow-hidden accordion-item">
+<button class="w-full text-left p-4 flex justify-between items-center hover:bg-surface-bright transition-colors" onclick="toggleAccordion(this)">
+<span class="font-body-md text-body-md font-semibold text-on-surface">How do you handle scope creep mid-sprint?</span>
+<span class="material-symbols-outlined text-text-muted chevron-icon transition-transform">chevron_right</span>
+</button>
+<div class="accordion-content bg-surface-container-low border-t border-border-subtle">
+<div class="p-6 space-y-4">
+<div>
+<div class="font-label-technical text-label-technical text-primary mb-1 uppercase">Interviewer Intent</div>
+<p class="text-text-muted font-body-sm">Testing your project management skills and ability to protect team focus.</p>
+</div>
+<div>
+<div class="font-label-technical text-label-technical text-secondary-fixed-dim mb-1 uppercase">Strategy</div>
+<p class="text-on-surface font-body-sm">Emphasize communication with stakeholders and the prioritization framework you use to defer non-critical items.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 7-Day Roadmap -->
+<section class="space-y-8 pb-12">
+<div class="flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-text-muted uppercase">READINESS ROADMAP (7 DAYS)</h3>
+<span class="text-status-success font-label-technical text-label-technical flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span> CURRENTLY ON TRACK
+                </span>
+</div>
+<div class="relative pt-12">
+<!-- Timeline Dashed Line -->
+<div class="absolute top-[4.5rem] left-0 w-full h-[1px] border-t border-dashed border-border-subtle"></div>
+<div class="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-7 gap-4">
+<!-- Day 1 -->
+<div class="relative group">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold z-10 ring-4 ring-background">1</div>
+<div class="bg-surface-container border border-primary p-4 rounded-lg h-full hover:bg-surface-bright transition-all shadow-[0_0_15px_rgba(173,198,255,0.1)]">
+<h5 class="font-label-caps text-label-caps text-primary mb-2">SYSTEMS REVIEW</h5>
+<p class="text-on-surface font-body-sm">Review Distributed Systems design patterns and CAP theorem trade-offs.</p>
+</div>
+</div>
+<!-- Day 2 -->
+<div class="relative group">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold z-10 ring-4 ring-background">2</div>
+<div class="bg-surface-container border border-primary p-4 rounded-lg h-full hover:bg-surface-bright transition-all shadow-[0_0_15px_rgba(173,198,255,0.1)]">
+<h5 class="font-label-caps text-label-caps text-primary mb-2">RUST DRILLS</h5>
+<p class="text-on-surface font-body-sm">Code 3 performant memory-safe data structures in Rust.</p>
+</div>
+</div>
+<!-- Day 3 -->
+<div class="relative group">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high text-text-muted flex items-center justify-center font-bold z-10 ring-4 ring-background border border-border-subtle">3</div>
+<div class="bg-surface-container border border-border-subtle p-4 rounded-lg h-full hover:bg-surface-bright transition-all">
+<h5 class="font-label-caps text-label-caps text-text-muted mb-2">K8S OPERATORS</h5>
+<p class="text-on-surface font-body-sm">Tutorial on writing custom Kubernetes Operators in Go.</p>
+</div>
+</div>
+<!-- Day 4 -->
+<div class="relative group">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high text-text-muted flex items-center justify-center font-bold z-10 ring-4 ring-background border border-border-subtle">4</div>
+<div class="bg-surface-container border border-border-subtle p-4 rounded-lg h-full hover:bg-surface-bright transition-all">
+<h5 class="font-label-caps text-label-caps text-text-muted mb-2">LATENCY ANALYTICS</h5>
+<p class="text-on-surface font-body-sm">Analyze P99 latency metrics and mitigation strategies.</p>
+</div>
+</div>
+<!-- Day 5 -->
+<div class="relative group">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high text-text-muted flex items-center justify-center font-bold z-10 ring-4 ring-background border border-border-subtle">5</div>
+<div class="bg-surface-container border border-border-subtle p-4 rounded-lg h-full hover:bg-surface-bright transition-all">
+<h5 class="font-label-caps text-label-caps text-text-muted mb-2">BEHAVIORAL MOCK</h5>
+<p class="text-on-surface font-body-sm">Run 2 AI simulations focused on 'Leadership Disagreements'.</p>
+</div>
+</div>
+<!-- Day 6 -->
+<div class="relative group">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high text-text-muted flex items-center justify-center font-bold z-10 ring-4 ring-background border border-border-subtle">6</div>
+<div class="bg-surface-container border border-border-subtle p-4 rounded-lg h-full hover:bg-surface-bright transition-all">
+<h5 class="font-label-caps text-label-caps text-text-muted mb-2">FULL SIMULATION</h5>
+<p class="text-on-surface font-body-sm">60-minute technical and behavioral mock interview marathon.</p>
+</div>
+</div>
+<!-- Day 7 -->
+<div class="relative group">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high text-text-muted flex items-center justify-center font-bold z-10 ring-4 ring-background border border-border-subtle">7</div>
+<div class="bg-surface-container border border-border-subtle p-4 rounded-lg h-full hover:bg-surface-bright transition-all">
+<h5 class="font-label-caps text-label-caps text-text-muted mb-2">FINAL REVIEW</h5>
+<p class="text-on-surface font-body-sm">Refine strategy based on simulation feedback and rest.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-border-subtle py-8 mt-12">
+<div class="max-w-7xl mx-auto px-container-margin flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex flex-col items-center md:items-start gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">INTERVIEWIQ</span>
+<span class="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. Technical Excellence.</span>
+</div>
+<div class="flex gap-6">
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Contact Support</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Security</a>
+</div>
+</div>
+</footer>
+<script>
+        function toggleAccordion(button) {
+            const item = button.closest('.accordion-item');
+            const isOpen = item.classList.contains('accordion-open');
+            
+            // Close all first for true accordion behavior (optional)
+            // document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('accordion-open'));
+            
+            if (isOpen) {
+                item.classList.remove('accordion-open');
+            } else {
+                item.classList.add('accordion-open');
+            }
+        }
+
+        // Initialize micro-interactions
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('InterviewIQ Report Engine initialized.');
+            
+            // Dynamic subtle light effect on mouse move
+            const cards = document.querySelectorAll('.bg-surface-container');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+        });
+    </script>
+</body></html>

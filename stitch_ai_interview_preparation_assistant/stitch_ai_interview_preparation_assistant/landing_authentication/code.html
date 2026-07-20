@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InterviewIQ | Technical Excellence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for technical look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #131314; }
+        ::-webkit-scrollbar-thumb { background: #2D2D30; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #adc6ff; }
+        
+        .glass-panel {
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #2D2D30;
+        }
+        
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+        }
+
+        .active-tab-indicator {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#131314",
+                        "outline": "#8c909f",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "on-primary": "#002e6a",
+                        "on-secondary-container": "#00686f",
+                        "on-primary-fixed": "#001a42",
+                        "secondary": "#d3fbff",
+                        "surface-container-high": "#2a2a2b",
+                        "on-surface": "#e5e2e3",
+                        "status-success": "#10B981",
+                        "on-primary-fixed-variant": "#004395",
+                        "outline-variant": "#424754",
+                        "tertiary-container": "#df7412",
+                        "status-warning": "#F59E0B",
+                        "error": "#ffb4ab",
+                        "status-error": "#EF4444",
+                        "on-secondary": "#00363a",
+                        "on-secondary-fixed": "#002022",
+                        "tertiary": "#ffb786",
+                        "border-subtle": "#2D2D30",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-bright": "#3a393a",
+                        "inverse-surface": "#e5e2e3",
+                        "surface-variant": "#353436",
+                        "surface-elevated": "#27272A",
+                        "on-tertiary-container": "#461f00",
+                        "secondary-fixed-dim": "#00dbe9",
+                        "secondary-container": "#00eefc",
+                        "surface-container": "#18181B",
+                        "on-tertiary": "#502400",
+                        "surface-tint": "#adc6ff",
+                        "primary-container": "#4d8eff",
+                        "on-primary-container": "#00285d",
+                        "on-error": "#690005",
+                        "inverse-primary": "#005ac2",
+                        "inverse-on-surface": "#313031",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-container-lowest": "#0e0e0f",
+                        "text-muted": "#A1A1AA",
+                        "on-background": "#e5e2e3",
+                        "surface": "#131314",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-dim": "#131314",
+                        "secondary-fixed": "#7df4ff",
+                        "on-secondary-fixed-variant": "#004f54",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-tertiary-fixed": "#311400",
+                        "primary": "#adc6ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-highest": "#353436"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-margin": "24px",
+                        "unit": "8px",
+                        "section-gap": "48px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Geist"],
+                        "label-technical": ["JetBrains Mono"],
+                        "body-sm": ["Geist"],
+                        "display-hero": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "label-technical": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary/30 antialiased font-body-md overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="bg-background dark:bg-background border-b border-border-subtle fixed top-0 w-full z-50">
+<nav class="flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface tracking-tight">InterviewIQ</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-primary dark:text-primary border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Reports</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Practice</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer" data-icon="settings">settings</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-border-subtle">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a diverse software engineer in a high-tech minimalist office environment. The lighting is cold, professional blue with sharp focus on technical competence. The aesthetic is clean and modern, matching a dark-mode UI with subtle highlights on facial features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4kNc_Gjsk5_ljl08UhomiBzzV3-MYsQ7dzML1hNJFT8Tpu_FYwB_hCCPeZIwYy4Chz8-6g11kCyr3L5M_qvmfZjp6bUDvUKP-U84rBCMA1pnhd5-7xXK_OTGdJj1m-z78wrC7XH3GTGvAsC2qv25-IgojaUxEujPf-Lz42LuZb4YwQ9Z89lH4ncGbA5aYNmlWmY52AUSLjxFGdcsELuD8ky9FQMWwJBodafcvKKnUmDUfPO9MP214qrLPsMRJ-J0dyAjvORVWug"/>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex items-center overflow-hidden hero-gradient">
+<div class="absolute inset-0 z-0">
+
+</div>
+<div class="relative z-10 w-full max-w-7xl mx-auto px-container-margin grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-24">
+<!-- Headline Content -->
+<div class="lg:col-span-7">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-high border border-border-subtle rounded-full mb-6">
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
+<span class="font-label-technical text-label-technical text-primary uppercase tracking-widest">New: AI Engine v4.2</span>
+</div>
+<h1 class="font-display-hero text-display-hero text-on-surface mb-6 max-w-2xl leading-tight">
+                        Master the Technical Interview with <span class="text-primary">AI Precision</span>.
+                    </h1>
+<p class="font-body-lg text-body-lg text-text-muted mb-8 max-w-xl">
+                        An elite-tier diagnostic platform designed for high-stakes technical candidates. Analyze resumes, simulate realistic system design mocks, and identify critical knowledge gaps before you step into the room.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="px-8 py-3 bg-primary text-on-primary font-bold rounded hover:bg-primary/90 transition-all active:scale-95">
+                            Start Analysis
+                        </button>
+<button class="px-8 py-3 border border-primary text-primary font-bold rounded hover:bg-primary/10 transition-all active:scale-95">
+                            View Demo
+                        </button>
+</div>
+<div class="mt-12 grid grid-cols-3 gap-8">
+<div>
+<div class="font-headline-md text-headline-md font-bold">98.2%</div>
+<div class="font-label-technical text-label-technical text-text-muted">Prediction Accuracy</div>
+</div>
+<div>
+<div class="font-headline-md text-headline-md font-bold">450+</div>
+<div class="font-label-technical text-label-technical text-text-muted">Algorithm Templates</div>
+</div>
+<div>
+<div class="font-headline-md text-headline-md font-bold">12ms</div>
+<div class="font-label-technical text-label-technical text-text-muted">Analysis Latency</div>
+</div>
+</div>
+</div>
+<!-- Auth Integration -->
+<div class="lg:col-span-5">
+<div class="glass-panel p-8 rounded-xl shadow-2xl relative overflow-hidden">
+<div class="flex border-b border-border-subtle mb-8">
+<button class="flex-1 pb-4 font-label-technical text-label-technical text-on-surface border-b-2 border-primary transition-all" id="tab-login" onclick="switchAuthTab('login')">LOGIN</button>
+<button class="flex-1 pb-4 font-label-technical text-label-technical text-text-muted hover:text-on-surface transition-all" id="tab-register" onclick="switchAuthTab('register')">REGISTER</button>
+</div>
+<!-- Login Form -->
+<form class="space-y-6" id="form-login">
+<div class="space-y-1.5">
+<label class="font-label-technical text-label-technical text-text-muted">IDENTIFIER (EMAIL)</label>
+<input class="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors" placeholder="dev@interviewiq.ai" type="email"/>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-technical text-label-technical text-text-muted">SECURITY TOKEN (PASSWORD)</label>
+<input class="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors" placeholder="••••••••" type="password"/>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 font-bold rounded flex justify-center items-center gap-2 hover:bg-primary/90 transition-all">
+<span>AUTHENTICATE</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="fingerprint">fingerprint</span>
+</button>
+<div class="flex items-center justify-between font-label-technical text-label-technical">
+<label class="flex items-center gap-2 text-text-muted cursor-pointer">
+<input class="rounded bg-surface-container border-border-subtle text-primary focus:ring-0" type="checkbox"/>
+                                    Remember Session
+                                </label>
+<a class="text-primary hover:underline" href="#">RECOVER KEY</a>
+</div>
+</form>
+<!-- Register Form (Hidden by default) -->
+<form class="space-y-4 hidden" id="form-register">
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1.5">
+<label class="font-label-technical text-label-technical text-text-muted">FIRST NAME</label>
+<input class="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-technical text-label-technical text-text-muted">LAST NAME</label>
+<input class="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary" type="text"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-technical text-label-technical text-text-muted">EMAIL ADDRESS</label>
+<input class="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary" type="email"/>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-technical text-label-technical text-text-muted">NEW PASSWORD</label>
+<input class="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary" type="password"/>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 font-bold rounded hover:bg-primary/90 transition-all mt-4">
+                                INITIALIZE ACCOUNT
+                            </button>
+</form>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-section-gap bg-background border-t border-border-subtle relative overflow-hidden">
+<div class="max-w-7xl mx-auto px-container-margin">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div class="max-w-2xl">
+<span class="font-label-technical text-label-technical text-primary uppercase mb-4 block">Core Architecture</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Integrated Diagnostic Modules</h2>
+<p class="font-body-md text-body-md text-text-muted mt-4">Every component is engineered to provide precise, data-driven feedback on your technical interview performance.</p>
+</div>
+<div class="flex gap-4">
+<div class="p-2 border border-border-subtle rounded hover:border-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</div>
+<div class="p-2 border border-border-subtle rounded hover:border-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Resume Analysis -->
+<div class="md:col-span-8 group relative bg-surface-container border border-border-subtle p-8 rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-500">
+<div class="relative z-10 flex flex-col h-full">
+<span class="material-symbols-outlined text-primary mb-6 text-[40px]" data-icon="terminal">terminal</span>
+<h3 class="font-headline-md text-headline-md mb-4">JD &amp; Resume Gap Analysis</h3>
+<p class="font-body-md text-body-md text-text-muted max-w-lg mb-8">Our proprietary LLM engine maps your professional history against specific job descriptions to reveal critical keywords and architectural experience gaps.</p>
+<div class="mt-auto flex items-center gap-4">
+<div class="px-4 py-2 bg-surface-container-high rounded border border-border-subtle font-label-technical text-label-technical">MATCH SCORE: 84%</div>
+<div class="px-4 py-2 bg-surface-container-high rounded border border-border-subtle font-label-technical text-label-technical">OPTIMIZED ATS</div>
+</div>
+</div>
+<div class="absolute right-0 top-0 w-1/3 h-full opacity-10 group-hover:opacity-20 transition-opacity">
+<div class="h-full w-full" data-alt="Abstract technical background with complex lines of code and data visualization nodes. Dark charcoal background with bright neon cyan accent lines flowing like digital energy. Sophisticated, pro-grade aesthetic suitable for a high-end technical dashboard." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB9TlaN9Rt-VGoXUm-fTRcGL7-J_fNf2MQ2S1KGr-kyl7XjtVIrbqVE-2EQHcwLgvC-chFKrqOQ70tTigJH5IOkHxUsje-jH1nW6extHrXaQJ4dHUoV1fLICivsZ6simy5u1LhQtrApZ8lmVBRxihukVPYW086mixXUekz7swolmoumDFQ0CtCtkJMczB__8pSxJl_fD5TIXwv0HDUAyuY_-ZT7Z_kXGGgO0qDF-r4A2ViSJZ4V7L8CltkSH_WcvQ0zCedrhcAAKA')"></div>
+</div>
+</div>
+<!-- Readiness Reports -->
+<div class="md:col-span-4 group bg-surface-container-high border border-border-subtle p-8 rounded-xl hover:border-primary/50 transition-all duration-500">
+<span class="material-symbols-outlined text-status-success mb-6 text-[40px]" data-icon="monitoring">monitoring</span>
+<h3 class="font-headline-md text-headline-md mb-4">Readiness Score</h3>
+<p class="font-body-md text-body-md text-text-muted mb-6">A quantified index of your likelihood to clear the technical loop based on recent mocks.</p>
+<div class="relative h-4 w-full bg-background rounded-full overflow-hidden mb-2">
+<div class="absolute inset-0 bg-status-success w-[72%] transition-all duration-1000"></div>
+</div>
+<div class="flex justify-between font-label-technical text-label-technical">
+<span>CURRENT PROGRESS</span>
+<span class="text-status-success">72%</span>
+</div>
+</div>
+<!-- Mock Interviews -->
+<div class="md:col-span-4 group bg-surface-container-high border border-border-subtle p-8 rounded-xl hover:border-primary/50 transition-all duration-500">
+<span class="material-symbols-outlined text-tertiary mb-6 text-[40px]" data-icon="videocam">videocam</span>
+<h3 class="font-headline-md text-headline-md mb-4">AI Mock Panels</h3>
+<p class="font-body-md text-body-md text-text-muted">Simulate behavioral and technical rounds with voice-activated AI agents mimicking top-tier interviewers.</p>
+</div>
+<!-- Technical Roadmap -->
+<div class="md:col-span-8 group relative bg-surface-container border border-border-subtle p-8 rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-500">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+<div>
+<h3 class="font-headline-md text-headline-md mb-4">Diagnostic Roadmap</h3>
+<p class="font-body-md text-body-md text-text-muted mb-6">personalized learning paths that focus strictly on the algorithms and system design patterns you haven't mastered yet.</p>
+<button class="flex items-center gap-2 text-primary font-bold group-hover:translate-x-2 transition-transform">
+                                    VIEW FULL ROADMAP
+                                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="relative py-4 pl-8 border-l border-dashed border-border-subtle space-y-6">
+<div class="relative flex items-center gap-4">
+<div class="absolute -left-[37px] w-4 h-4 rounded-full bg-status-success shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+<span class="font-label-technical text-label-technical text-on-surface">Data Structures: Linked Lists</span>
+</div>
+<div class="relative flex items-center gap-4">
+<div class="absolute -left-[37px] w-4 h-4 rounded-full bg-primary shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+<span class="font-label-technical text-label-technical text-on-surface">System Design: Sharding</span>
+</div>
+<div class="relative flex items-center gap-4 opacity-50">
+<div class="absolute -left-[37px] w-4 h-4 rounded-full bg-surface-variant"></div>
+<span class="font-label-technical text-label-technical text-on-surface">Trie Implementations</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Proof / Log -->
+<section class="py-16 bg-surface-container-lowest border-t border-border-subtle">
+<div class="max-w-7xl mx-auto px-container-margin overflow-hidden">
+<div class="flex items-center gap-4 mb-8">
+<span class="font-label-technical text-label-technical text-text-muted">SYSTEM_LOG // LIVE_FEED</span>
+<div class="h-[1px] flex-1 bg-border-subtle"></div>
+</div>
+<div class="flex flex-wrap gap-x-12 gap-y-6 grayscale opacity-60">
+<div class="flex items-center gap-2 font-headline-md font-bold text-on-surface">
+<span class="material-symbols-outlined" data-icon="cloud">cloud</span> AWS
+                    </div>
+<div class="flex items-center gap-2 font-headline-md font-bold text-on-surface">
+<span class="material-symbols-outlined" data-icon="database">database</span> Redis
+                    </div>
+<div class="flex items-center gap-2 font-headline-md font-bold text-on-surface">
+<span class="material-symbols-outlined" data-icon="architecture">architecture</span> Kubernetes
+                    </div>
+<div class="flex items-center gap-2 font-headline-md font-bold text-on-surface">
+<span class="material-symbols-outlined" data-icon="code">code</span> Python
+                    </div>
+<div class="flex items-center gap-2 font-headline-md font-bold text-on-surface">
+<span class="material-symbols-outlined" data-icon="data_object">data_object</span> TensorFlow
+                    </div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-border-subtle">
+<div class="flex flex-col md:flex-row justify-between items-center py-8 px-container-margin w-full max-w-7xl mx-auto gap-4">
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">InterviewIQ</span>
+<p class="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. Technical Excellence.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Contact Support</a>
+<a class="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" href="#">Security</a>
+</div>
+</div>
+</footer>
+<script>
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('form-login');
+            const registerForm = document.getElementById('form-register');
+            const loginBtn = document.getElementById('tab-login');
+            const registerBtn = document.getElementById('tab-register');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginBtn.classList.add('border-b-2', 'border-primary', 'text-on-surface');
+                loginBtn.classList.remove('text-text-muted');
+                registerBtn.classList.remove('border-b-2', 'border-primary', 'text-on-surface');
+                registerBtn.classList.add('text-text-muted');
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                registerBtn.classList.add('border-b-2', 'border-primary', 'text-on-surface');
+                registerBtn.classList.remove('text-text-muted');
+                loginBtn.classList.remove('border-b-2', 'border-primary', 'text-on-surface');
+                loginBtn.classList.add('text-text-muted');
+            }
+        }
+
+        // Simple interaction for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.95)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>
