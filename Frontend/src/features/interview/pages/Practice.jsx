@@ -15,9 +15,15 @@ const Practice = () => {
     ])
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
     const [userResponse, setUserResponse] = useState("")
-    const [isMuted, setIsMuted] = useState(false)
     const [isVideoOff, setIsVideoOff] = useState(false)
     
+    // Voice agent specific states
+    const [hasStarted, setHasStarted] = useState(false)
+    const [isListening, setIsListening] = useState(false)
+    const [isAiSpeaking, setIsAiSpeaking] = useState(false)
+    const [recognition, setRecognition] = useState(null)
+    const [speechSupported, setSpeechSupported] = useState(true)
+
     // Real-time analysis states
     const [wordsPerMin, setWordsPerMin] = useState(0)
     const [starScore, setStarScore] = useState({ s: 0, t: 0, a: 0, r: 0 })
@@ -25,6 +31,132 @@ const Practice = () => {
     const [liveMatchScore, setLiveMatchScore] = useState(50)
 
     const targetKeywords = ["stakeholders", "alignment", "data-driven", "scalability", "agile", "consistency", "latency", "testing"]
+
+    // Initialize Web Speech Recognition
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            setSpeechSupported(false);
+            return;
+        }
+
+        const rec = new SpeechRecognition();
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.lang = 'en-US';
+
+        rec.onresult = (event) => {
+            let transcript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript + ' ';
+            }
+            setUserResponse(transcript);
+        };
+
+        rec.onerror = (e) => {
+            console.error("Speech Recognition Error:", e);
+            if (e.error === 'not-allowed') {
+                alert("Microphone permission was denied. Please allow microphone access in your browser settings.");
+                setIsListening(false);
+            }
+        };
+
+        rec.onend = () => {
+            // Keep listening if state is still true
+            if (isListening) {
+                try {
+                    rec.start();
+                } catch (err) {
+                    // Ignore start errors on boundary
+                }
+            }
+        };
+
+        setRecognition(rec);
+    }, [isListening]);
+
+    // Manage starting/stopping the speech recognition engine based on isListening state
+    useEffect(() => {
+        if (!recognition) return;
+
+        if (isListening) {
+            try {
+                recognition.start();
+                console.log("Speech recognition active.");
+            } catch (e) {
+                console.error("Error starting speech recognition:", e);
+            }
+        } else {
+            try {
+                recognition.stop();
+                console.log("Speech recognition inactive.");
+            } catch (e) {
+                // Ignore if recognition already stopped
+            }
+        }
+    }, [isListening, recognition]);
+
+    // Speak a question using Web Speech Synthesis API
+    const speakQuestion = (text) => {
+        if (!('speechSynthesis' in window)) return;
+
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        
+        // Stop listening while AI is speaking to prevent transcribing the speaker audio
+        setIsListening(false);
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Load voices dynamically
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
+                             || voices.find(v => v.lang.startsWith('en')) 
+                             || voices[0];
+                             
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        }
+        
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        
+        utterance.onstart = () => {
+            setIsAiSpeaking(true);
+        };
+        
+        utterance.onend = () => {
+            setIsAiSpeaking(false);
+            // Automatically start listening after question completes
+            setIsListening(true);
+        };
+        
+        utterance.onerror = () => {
+            setIsAiSpeaking(false);
+        };
+
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Clean up speech synthesis & recognition on unmount
+    useEffect(() => {
+        return () => {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            if (recognition) {
+                recognition.stop();
+            }
+        };
+    }, [recognition]);
+
+    const startSession = () => {
+        setHasStarted(true);
+        // Small delay to ensure synthesis engine is unlocked by click interaction
+        setTimeout(() => {
+            speakQuestion(questions[0]);
+        }, 100);
+    };
 
     // Try loading questions from the latest user report on mount
     useEffect(() => {
@@ -89,9 +221,18 @@ const Practice = () => {
     }, [userResponse])
 
     const handleNextQuestion = () => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        setIsListening(false);
+
         if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex(prev => prev + 1)
-            setUserResponse("")
+            const nextIndex = currentQuestionIndex + 1;
+            setCurrentQuestionIndex(nextIndex);
+            setUserResponse("");
+            setTimeout(() => {
+                speakQuestion(questions[nextIndex]);
+            }, 300);
         } else {
             alert("Practice session completed! Great job.")
             navigate("/")
@@ -126,116 +267,182 @@ const Practice = () => {
                 
                 {/* Main Content Area */}
                 <section className="flex-grow flex flex-col gap-6 w-full md:w-2/3 lg:w-3/4">
-                    {/* AI Interviewer Avatar Card */}
-                    <div className="glass-panel rounded-xl p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
-                        <div className="relative z-10 w-full md:w-48 shrink-0 flex flex-col items-center">
-                            <div className="aspect-square w-full rounded-lg bg-surface-container-highest border border-border-subtle overflow-hidden flex items-center justify-center relative">
-                                <span className="material-symbols-outlined text-primary text-[80px]">smart_toy</span>
+                    
+                    {!hasStarted ? (
+                        /* Startup Screen overlay */
+                        <div className="glass-panel rounded-xl p-10 flex flex-col items-center text-center gap-6 relative overflow-hidden flex-grow justify-center">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+                            
+                            <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center relative">
+                                <span className="material-symbols-outlined text-primary text-5xl animate-pulse">mic</span>
+                                <div className="absolute inset-0 rounded-full border border-primary/30 animate-ping opacity-25"></div>
                             </div>
-                            <div className="mt-3 flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-status-success animate-pulse"></div>
-                                <span className="font-label-technical text-[10px] text-status-success uppercase tracking-widest font-bold">Live: AI Interviewer</span>
+                            
+                            <div className="space-y-2 max-w-lg">
+                                <h2 className="font-headline-lg text-2xl md:text-3xl text-on-surface font-extrabold tracking-tight">AI Voice Practice Session</h2>
+                                <p className="font-body-md text-text-muted leading-relaxed">
+                                    Simulate a real voice interview. The AI agent will read out the questions, and you can speak your answers directly using your microphone.
+                                </p>
                             </div>
-                        </div>
-                        <div className="relative z-10 flex-grow flex flex-col gap-4">
-                            <div className="flex items-center gap-2">
-                                <span className="font-label-technical text-label-technical text-primary">QUESTION {currentQuestionIndex + 1} OF {questions.length}</span>
-                                <div className="flex-grow h-px bg-border-subtle"></div>
-                            </div>
-                            <h2 className="font-headline-lg text-2xl md:text-3xl text-on-surface leading-tight font-bold">
-                                {questions[currentQuestionIndex]}
-                            </h2>
-                            <div className="flex items-center gap-3 mt-2">
-                                <span className="material-symbols-outlined text-primary text-xl">volume_up</span>
-                                <div className="h-4 flex items-center gap-0.5">
-                                    <div className="w-1 h-3 bg-primary/40 rounded-full animate-bounce"></div>
-                                    <div className="w-1 h-5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-1 h-2 bg-primary/30 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                                    <div className="w-1 h-6 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
-                                    <div className="w-1 h-4 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-xl w-full border border-border-subtle bg-surface-container/40 p-6 rounded-xl mt-2">
+                                <div className="flex gap-3">
+                                    <span className="material-symbols-outlined text-primary shrink-0 mt-0.5">volume_up</span>
+                                    <div>
+                                        <h4 className="font-bold text-sm text-on-surface">AI Audio Questions</h4>
+                                        <p className="text-xs text-text-muted">The AI interviewer speaks each question using browser Speech Synthesis.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-3">
+                                    <span className="material-symbols-outlined text-primary shrink-0 mt-0.5">settings_voice</span>
+                                    <div>
+                                        <h4 className="font-bold text-sm text-on-surface">Voice Transcription</h4>
+                                        <p className="text-xs text-text-muted">Speak naturally to answer. Your voice is transcribed in real-time.</p>
+                                    </div>
                                 </div>
                             </div>
+                            
+                            <button 
+                                onClick={startSession}
+                                className="bg-primary text-on-primary font-bold px-8 py-3.5 rounded-full hover:scale-105 transition-all shadow-[0_0_15px_rgba(173,198,255,0.25)] flex items-center gap-2 cursor-pointer mt-4"
+                            >
+                                <span className="material-symbols-outlined">play_arrow</span>
+                                Start Practice Session
+                            </button>
                         </div>
-                    </div>
-
-                    {/* Real-time Response Transcript */}
-                    <div className="flex-grow glass-panel rounded-xl flex flex-col min-h-[350px]">
-                        <div className="border-b border-border-subtle px-6 py-3 flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-primary">record_voice_over</span>
-                                <span className="font-label-technical text-label-technical font-bold">REAL-TIME TRANSCRIPT</span>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <span className="font-label-technical text-label-technical text-text-muted">STATUS: LISTENING</span>
-                                <div className="writing-indicator flex gap-1">
-                                    <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce"></span>
-                                    <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
-                                    <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
+                    ) : (
+                        <>
+                            {/* AI Interviewer Avatar Card */}
+                            <div className="glass-panel rounded-xl p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+                                <div className="relative z-10 w-full md:w-48 shrink-0 flex flex-col items-center">
+                                    <div className={`aspect-square w-full rounded-lg bg-surface-container-highest border overflow-hidden flex items-center justify-center relative transition-all duration-300 ${
+                                        isAiSpeaking ? 'border-primary shadow-[0_0_15px_rgba(173,198,255,0.2)] scale-102' : 'border-border-subtle'
+                                    }`}>
+                                        <span className={`material-symbols-outlined text-primary text-[80px] ${isAiSpeaking ? 'animate-pulse' : ''}`}>smart_toy</span>
+                                    </div>
+                                    <div className="mt-3 flex items-center gap-2">
+                                        <div className={`w-2 h-2 rounded-full ${isAiSpeaking ? 'bg-primary' : 'bg-status-success'} animate-pulse`}></div>
+                                        <span className="font-label-technical text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">
+                                            {isAiSpeaking ? 'AI Speaking...' : 'AI Listening...'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="relative z-10 flex-grow flex flex-col gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-label-technical text-label-technical text-primary font-bold">QUESTION {currentQuestionIndex + 1} OF {questions.length}</span>
+                                        <div className="flex-grow h-px bg-border-subtle"></div>
+                                    </div>
+                                    <h2 className="font-headline-lg text-2xl md:text-3xl text-on-surface leading-tight font-bold">
+                                        {questions[currentQuestionIndex]}
+                                    </h2>
+                                    <div className="flex items-center gap-3 mt-2">
+                                        <span className={`material-symbols-outlined text-primary text-xl ${isAiSpeaking ? 'animate-pulse' : ''}`}>volume_up</span>
+                                        <div className="h-4 flex items-center gap-0.5">
+                                            <div className={`w-1 h-3 bg-primary/40 rounded-full ${isAiSpeaking ? 'animate-bounce' : ''}`}></div>
+                                            <div className={`w-1 h-5 bg-primary/60 rounded-full ${isAiSpeaking ? 'animate-bounce' : ''}`} style={{ animationDelay: '0.1s' }}></div>
+                                            <div className={`w-1 h-2 bg-primary/30 rounded-full ${isAiSpeaking ? 'animate-bounce' : ''}`} style={{ animationDelay: '0.2s' }}></div>
+                                            <div className={`w-1 h-6 bg-primary rounded-full ${isAiSpeaking ? 'animate-bounce' : ''}`} style={{ animationDelay: '0.3s' }}></div>
+                                            <div className={`w-1 h-4 bg-primary/50 rounded-full ${isAiSpeaking ? 'animate-bounce' : ''}`} style={{ animationDelay: '0.4s' }}></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Interactive Text Input representing the voice/transcribed content */}
-                        <div className="p-8 flex-grow flex flex-col gap-4">
-                            <p className="text-text-muted font-body-sm italic">
-                                * Type your response below to simulate transcribing speech. Watch real-time metrics update in the sidebar as you type.
-                            </p>
-                            <textarea 
-                                className="w-full flex-grow bg-surface-container/50 border border-border-subtle rounded-lg p-6 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-0 transition-all resize-none placeholder:text-outline/40 custom-scrollbar leading-relaxed"
-                                placeholder="Start speaking/typing your answer here..."
-                                value={userResponse}
-                                onChange={(e) => setUserResponse(e.target.value)}
-                            ></textarea>
-                        </div>
-                    </div>
+                            {/* Real-time Response Transcript */}
+                            <div className="flex-grow glass-panel rounded-xl flex flex-col min-h-[350px]">
+                                <div className="border-b border-border-subtle px-6 py-3 flex justify-between items-center">
+                                    <div className="flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-primary">record_voice_over</span>
+                                        <span className="font-label-technical text-label-technical font-bold">REAL-TIME TRANSCRIPT</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="font-label-technical text-label-technical text-text-muted uppercase">
+                                            STATUS: {isListening ? "LISTENING" : isAiSpeaking ? "AI SPEAKING" : "IDLE"}
+                                        </span>
+                                        {isListening && (
+                                            <div className="writing-indicator flex gap-1">
+                                                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce"></span>
+                                                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
+                                                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
 
-                    {/* Controls Bar */}
-                    <div className="flex items-center justify-center gap-4 p-4 border border-border-subtle bg-surface-container/40 rounded-xl">
-                        <button 
-                            onClick={() => setIsMuted(!isMuted)}
-                            className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all active:scale-95 cursor-pointer ${
-                                isMuted 
-                                    ? "bg-status-error/20 border-status-error text-status-error" 
-                                    : "bg-surface-container-high border-border-subtle hover:bg-surface-bright text-on-surface"
-                            }`}
-                            title={isMuted ? "Unmute Mic" : "Mute Mic"}
-                        >
-                            <span className="material-symbols-outlined">{isMuted ? "mic_off" : "mic"}</span>
-                        </button>
-                        <button 
-                            onClick={() => setIsVideoOff(!isVideoOff)}
-                            className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all active:scale-95 cursor-pointer ${
-                                isVideoOff 
-                                    ? "bg-status-error/20 border-status-error text-status-error" 
-                                    : "bg-surface-container-high border-border-subtle hover:bg-surface-bright text-on-surface"
-                            }`}
-                            title={isVideoOff ? "Start Camera" : "Stop Camera"}
-                        >
-                            <span className="material-symbols-outlined">{isVideoOff ? "videocam_off" : "videocam"}</span>
-                        </button>
-                        
-                        <button 
-                            onClick={handleNextQuestion}
-                            disabled={!userResponse.trim()}
-                            className={`px-8 h-14 rounded-full flex items-center justify-center font-bold transition-all active:scale-95 gap-2 cursor-pointer ${
-                                userResponse.trim()
-                                    ? "bg-primary text-on-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(173,198,255,0.15)]"
-                                    : "bg-surface-container-high text-text-muted border border-border-subtle cursor-not-allowed"
-                            }`}
-                        >
-                            <span>{currentQuestionIndex === questions.length - 1 ? "FINISH SESSION" : "NEXT QUESTION"}</span>
-                            <span className="material-symbols-outlined">arrow_forward</span>
-                        </button>
+                                {/* Interactive Text Input representing the voice/transcribed content */}
+                                <div className="p-8 flex-grow flex flex-col gap-4">
+                                    {!speechSupported && (
+                                        <div className="bg-status-error/10 border border-status-error/20 text-status-error text-xs px-4 py-3 rounded-lg flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-sm">warning</span>
+                                            <span>Speech Recognition is not supported by your browser. Please try Google Chrome or Microsoft Edge for voice input. You can still type your answers.</span>
+                                        </div>
+                                    )}
+                                    <p className="text-text-muted font-body-sm italic">
+                                        {isListening 
+                                            ? "* Microphone is active. Speak clearly to transcribe your answer." 
+                                            : "* Microphone is inactive. Click the microphone button below to start transcribing or type your answer directly."}
+                                    </p>
+                                    <textarea 
+                                        className="w-full flex-grow bg-surface-container/50 border border-border-subtle rounded-lg p-6 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-0 transition-all resize-none placeholder:text-outline/40 custom-scrollbar leading-relaxed"
+                                        placeholder="Start speaking your answer here..."
+                                        value={userResponse}
+                                        onChange={(e) => setUserResponse(e.target.value)}
+                                    ></textarea>
+                                </div>
+                            </div>
 
-                        <button 
-                            onClick={() => navigate('/')}
-                            className="px-6 h-14 rounded-full flex items-center justify-center bg-status-error text-white font-bold hover:brightness-110 transition-all active:scale-95 gap-2 cursor-pointer"
-                        >
-                            <span className="material-symbols-outlined">call_end</span>
-                            End Session
-                        </button>
-                    </div>
+                            {/* Controls Bar */}
+                            <div className="flex items-center justify-center gap-4 p-4 border border-border-subtle bg-surface-container/40 rounded-xl">
+                                <button 
+                                    onClick={() => setIsListening(!isListening)}
+                                    disabled={isAiSpeaking}
+                                    className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all active:scale-95 cursor-pointer ${
+                                        isListening 
+                                            ? "bg-status-error/20 border-status-error text-status-error animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.3)]" 
+                                            : isAiSpeaking
+                                                ? "bg-surface-container-high border-border-subtle text-text-muted cursor-not-allowed opacity-50"
+                                                : "bg-surface-container-high border-border-subtle hover:bg-surface-bright text-on-surface"
+                                    }`}
+                                    title={isListening ? "Mute Microphone" : "Unmute Microphone"}
+                                >
+                                    <span className="material-symbols-outlined">{isListening ? "mic" : "mic_off"}</span>
+                                </button>
+                                <button 
+                                    onClick={() => setIsVideoOff(!isVideoOff)}
+                                    className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all active:scale-95 cursor-pointer ${
+                                        isVideoOff 
+                                            ? "bg-status-error/20 border-status-error text-status-error" 
+                                            : "bg-surface-container-high border-border-subtle hover:bg-surface-bright text-on-surface"
+                                    }`}
+                                    title={isVideoOff ? "Start Camera" : "Stop Camera"}
+                                >
+                                    <span className="material-symbols-outlined">{isVideoOff ? "videocam_off" : "videocam"}</span>
+                                </button>
+                                
+                                <button 
+                                    onClick={handleNextQuestion}
+                                    disabled={!userResponse.trim()}
+                                    className={`px-8 h-14 rounded-full flex items-center justify-center font-bold transition-all active:scale-95 gap-2 cursor-pointer ${
+                                        userResponse.trim()
+                                            ? "bg-primary text-on-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(173,198,255,0.15)]"
+                                            : "bg-surface-container-high text-text-muted border border-border-subtle cursor-not-allowed"
+                                    }`}
+                                >
+                                    <span>{currentQuestionIndex === questions.length - 1 ? "FINISH SESSION" : "NEXT QUESTION"}</span>
+                                    <span className="material-symbols-outlined">arrow_forward</span>
+                                </button>
+
+                                <button 
+                                    onClick={() => navigate('/')}
+                                    className="px-6 h-14 rounded-full flex items-center justify-center bg-status-error text-white font-bold hover:brightness-110 transition-all active:scale-95 gap-2 cursor-pointer"
+                                >
+                                    <span className="material-symbols-outlined">call_end</span>
+                                    End Session
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </section>
 
                 {/* Sidebar Widget Analytics */}
