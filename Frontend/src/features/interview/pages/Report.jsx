@@ -134,6 +134,12 @@ const Report = () => {
                             <span className="material-symbols-outlined text-[18px]">download</span> EXPORT REPORT
                         </button>
                         <button
+                            onClick={() => navigate(`/resume-builder?reportId=${report._id}`)}
+                            className="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-technical text-label-technical hover:opacity-90 transition-transform active:scale-95 flex items-center gap-2 cursor-pointer font-bold"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">psychology</span> TAILOR RESUME
+                        </button>
+                        <button
                             onClick={() => navigate('/practice')}
                             className="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-technical text-label-technical hover:opacity-90 transition-transform active:scale-95 flex items-center gap-2 cursor-pointer"
                         >

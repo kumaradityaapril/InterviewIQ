@@ -12,6 +12,9 @@ interviewRouter.post("/practice/respond",authMiddleware.authUser,interviewContro
 interviewRouter.post("/practice/save",authMiddleware.authUser,interviewController.savePracticeSessionController)
 interviewRouter.get("/practice/history",authMiddleware.authUser,interviewController.getPracticeSessionsController)
 interviewRouter.get("/:id",authMiddleware.authUser,interviewController.getReportByIdController)
+interviewRouter.get("/reports/:id/tailor",authMiddleware.authUser,interviewController.tailorResumeController)
+interviewRouter.post("/resume/tailor-custom",authMiddleware.authUser,interviewController.tailorCustomResumeController)
+interviewRouter.get("/reports/:id/parse-resume-to-form",authMiddleware.authUser,interviewController.parseResumeToFormController)
 
 module.exports = interviewRouter
 

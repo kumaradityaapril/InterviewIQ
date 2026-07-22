@@ -88,3 +88,39 @@ export async function getPracticeHistory() {
         throw err;
     }
 }
+
+export async function tailorResume(id) {
+    try {
+        const response = await axios.get(`${API_URL}/reports/${id}/tailor`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Error tailoring resume:", err);
+        throw err;
+    }
+}
+
+export async function tailorCustomResume(formBody) {
+    try {
+        const response = await axios.post(`${API_URL}/resume/tailor-custom`, formBody, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Error tailoring custom resume:", err);
+        throw err;
+    }
+}
+
+export async function parseResumeToForm(id) {
+    try {
+        const response = await axios.get(`${API_URL}/reports/${id}/parse-resume-to-form`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Error parsing resume context to form:", err);
+        throw err;
+    }
+}

@@ -5,6 +5,8 @@ import Protected from "./features/auth/components/Protected";
 import Home from "./features/interview/pages/Home";
 import Report from "./features/interview/pages/Report";
 import Practice from "./features/interview/pages/Practice";
+import ResumeBuilder from "./features/interview/pages/ResumeBuilder";
+import ResumeFormPage from "./features/interview/pages/ResumeFormPage";
 
 export const router = createBrowserRouter([
     {
@@ -18,6 +20,18 @@ export const router = createBrowserRouter([
     {
         path: "/practice",
         element: <Protected><Practice /></Protected>
+    },
+    {
+        path: "/reports/:id/tailor",
+        element: <Protected><ResumeBuilder /></Protected>
+    },
+    {
+        path: "/resume-builder",
+        element: <Protected><ResumeFormPage /></Protected>
+    },
+    {
+        path: "/resume-builder/preview",
+        element: <Protected><ResumeBuilder /></Protected>
     },
     {
         path: "/login",

@@ -145,8 +145,8 @@ const Home = () => {
                         <span className="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">InterviewIQ</span>
                         <nav className="hidden md:flex gap-6">
                             <Link className="font-body-md text-body-md text-primary border-b-2 border-primary pb-1" to="/">Dashboard</Link>
-                            <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" to="/">Reports</Link>
                             <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" to="/practice">Practice</Link>
+                            <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" to="/resume-builder">Resume Builder</Link>
                         </nav>
                     </div>
                     <div className="flex items-center gap-4">

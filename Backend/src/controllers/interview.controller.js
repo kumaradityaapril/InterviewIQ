@@ -1,5 +1,5 @@
 const pdfParse = require("pdf-parse")
-const { generateInterviewReport, generateFirstQuestion, evaluateResponseAndNextQuestion } = require("../services/ai.service")
+const { generateInterviewReport, generateFirstQuestion, evaluateResponseAndNextQuestion, generateTailoredResume, generateCustomTailoredResume, parseResumeToForm } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
 const practiceSessionModel = require("../models/practiceSession.model")
 
@@ -189,6 +189,72 @@ async function getPracticeSessionsController(req, res) {
     }
 }
 
+async function tailorResumeController(req, res) {
+    try {
+        const report = await interviewReportModel.findOne({ _id: req.params.id, user: req.user.id });
+        if (!report) {
+            return res.status(404).json({ message: "Interview report context not found" });
+        }
+
+        const tailoredResume = await generateTailoredResume({
+            resume: report.resume,
+            jobdescription: report.jobDescription
+        });
+
+        res.status(200).json({
+            message: "Resume tailored successfully",
+            tailoredResume
+        });
+    } catch (error) {
+        console.error("Error in tailorResumeController:", error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            message: error.message || "Failed to tailor resume"
+        });
+    }
+}
+
+async function tailorCustomResumeController(req, res) {
+    try {
+        const tailoredResume = await generateCustomTailoredResume(req.body);
+        res.status(200).json({
+            message: "Custom resume tailored successfully",
+            tailoredResume
+        });
+    } catch (error) {
+        console.error("Error in tailorCustomResumeController:", error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            message: error.message || "Failed to tailor custom resume"
+        });
+    }
+}
+
+async function parseResumeToFormController(req, res) {
+    try {
+        const report = await interviewReportModel.findOne({ _id: req.params.id, user: req.user.id });
+        if (!report) {
+            return res.status(404).json({ message: "Interview report context not found" });
+        }
+
+        const parsedResume = await parseResumeToForm({
+            resume: report.resume
+        });
+
+        res.status(200).json({
+            message: "Resume parsed successfully",
+            parsedResume,
+            jobDescription: report.jobDescription
+        });
+    } catch (error) {
+        console.error("Error in parseResumeToFormController:", error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            message: error.message || "Failed to parse resume context to form"
+        });
+    }
+}
+
 module.exports = {
     generateInterviewReportController,
     getUserReportsController,
@@ -196,5 +262,8 @@ module.exports = {
     startPracticeSessionController,
     respondPracticeQuestionController,
     savePracticeSessionController,
-    getPracticeSessionsController
+    getPracticeSessionsController,
+    tailorResumeController,
+    tailorCustomResumeController,
+    parseResumeToFormController
 }
