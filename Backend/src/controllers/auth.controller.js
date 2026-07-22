@@ -2,6 +2,8 @@ const userModel = require("../models/user.model")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const tokenBlackListModel = require("../models/blacklist.model")
+const interviewReportModel = require("../models/interviewReport.model")
+const practiceSessionModel = require("../models/practiceSession.model")
 
 async function registerUserController(req,res){
     try {
@@ -213,4 +215,91 @@ async function googleAuthController(req, res) {
     }
 }
 
-module.exports = {registerUserController,loginUserController,logoutUserController,getMeController,googleAuthController}
+async function getUserProfileController(req, res) {
+    try {
+        const user = await userModel.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Aggregate statistics
+        const totalReports = await interviewReportModel.countDocuments({ user: req.user.id });
+        const practiceSessions = await practiceSessionModel.find({ user: req.user.id });
+        const totalPracticeSessions = practiceSessions.length;
+
+        // Calculate average practice score
+        let averagePracticeScore = 0;
+        if (totalPracticeSessions > 0) {
+            const sum = practiceSessions.reduce((acc, sess) => {
+                return acc + (sess.overallScore || 0);
+            }, 0);
+            averagePracticeScore = Math.round(sum / totalPracticeSessions);
+        }
+
+        res.status(200).json({
+            message: "Profile details fetched successfully",
+            profile: {
+                username: user.username,
+                email: user.email,
+                isGoogleUser: !!user.googleId,
+                stats: {
+                    totalReports,
+                    totalPracticeSessions,
+                    averagePracticeScore
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Error in getUserProfileController:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+async function updateUserProfileController(req, res) {
+    try {
+        const { username, password } = req.body;
+        const user = await userModel.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (username) {
+            // Check if username is already taken by someone else
+            const existing = await userModel.findOne({ username, _id: { $ne: user._id } });
+            if (existing) {
+                return res.status(400).json({ message: "Full Name already taken" });
+            }
+            user.username = username;
+        }
+
+        if (password && !user.googleId) {
+            // Hash and update password
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        await user.save();
+
+        res.status(200).json({
+            message: "Profile updated successfully",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error("Error in updateUserProfileController:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+module.exports = {
+    registerUserController,
+    loginUserController,
+    logoutUserController,
+    getMeController,
+    googleAuthController,
+    getUserProfileController,
+    updateUserProfileController
+}

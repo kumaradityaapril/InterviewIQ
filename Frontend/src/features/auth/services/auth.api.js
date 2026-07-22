@@ -64,3 +64,27 @@ export async function googleLogin(token) {
         throw err;
     }
 }
+
+export async function getUserProfile() {
+    try {
+        const response = await axios.get("http://localhost:3000/api/auth/profile", {
+            withCredentials: true
+        });
+        return response.data;
+    } catch (err) {
+        console.error("getUserProfile API error:", err);
+        throw err;
+    }
+}
+
+export async function updateUserProfile(data) {
+    try {
+        const response = await axios.put("http://localhost:3000/api/auth/profile", data, {
+            withCredentials: true
+        });
+        return response.data;
+    } catch (err) {
+        console.error("updateUserProfile API error:", err);
+        throw err;
+    }
+}

@@ -409,9 +409,9 @@ const Practice = () => {
                     <div className="flex items-center gap-4">
                         <button className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer">notifications</button>
                         <button onClick={handleLogout} className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer" title="Log Out">logout</button>
-                        <div className="w-8 h-8 rounded-full bg-surface-container-high border border-border-subtle overflow-hidden flex items-center justify-center">
-                            <span className="material-symbols-outlined text-[20px] text-text-muted">person</span>
-                        </div>
+                        <Link to="/profile" className="w-8 h-8 rounded-full bg-surface-container-high border border-border-subtle overflow-hidden flex items-center justify-center hover:border-primary transition-colors cursor-pointer" title="View Profile">
+                            <span className="material-symbols-outlined text-[20px] text-text-muted hover:text-primary transition-colors">person</span>
+                        </Link>
                     </div>
                 </div>
             </header>

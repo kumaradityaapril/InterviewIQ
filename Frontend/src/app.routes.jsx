@@ -7,6 +7,7 @@ import Report from "./features/interview/pages/Report";
 import Practice from "./features/interview/pages/Practice";
 import ResumeBuilder from "./features/interview/pages/ResumeBuilder";
 import ResumeFormPage from "./features/interview/pages/ResumeFormPage";
+import Profile from "./features/auth/pages/Profile";
 
 export const router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
     {
         path: "/resume-builder/preview",
         element: <Protected><ResumeBuilder /></Protected>
+    },
+    {
+        path: "/profile",
+        element: <Protected><Profile /></Protected>
     },
     {
         path: "/login",
