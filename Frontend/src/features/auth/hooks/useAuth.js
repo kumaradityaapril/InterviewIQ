@@ -1,6 +1,6 @@
 import { useContext,useEffect } from "react";
 import { AuthContext } from "../auth.context";
-import { login,register,logout,getMe } from "../services/auth.api";
+import { login,register,logout,getMe,googleLogin } from "../services/auth.api";
 
 export const useAuth = () => {
     const context = useContext(AuthContext)
@@ -52,6 +52,23 @@ export const useAuth = () => {
         }
     }
 
+    const handleGoogleLogin = async (token) => {
+        setLoading(true)
+        try {
+            const data = await googleLogin(token)
+            if (data && data.user) {
+                setUser(data.user)
+                return { success: true }
+            }
+            return { success: false, error: data?.message || "Google Authentication failed" }
+        } catch (err) {
+            console.error(err)
+            return { success: false, error: "Google authentication failed" }
+        } finally {
+            setLoading(false)
+        }
+    }
+
     useEffect(()=>{
         const getAndSetUser = async() => {
             try {
@@ -72,6 +89,6 @@ export const useAuth = () => {
     },[])
 
 
-    return {user,Loading,handleRegister,handleLogin,handleLogout } 
+    return {user,Loading,handleRegister,handleLogin,handleLogout,handleGoogleLogin } 
 
 }

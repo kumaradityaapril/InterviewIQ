@@ -1,15 +1,56 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
+import Tech3DBackground from '../../interview/components/Tech3DBackground'
+import Tilt3D from '../../interview/components/Tilt3D'
 
 const Register = () => {
-    const { Loading, handleRegister } = useAuth()
+    const { Loading, handleRegister, handleGoogleLogin } = useAuth()
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorMsg, setErrorMsg] = useState("")
 
     const navigate = useNavigate()
+
+    useEffect(() => {
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        
+        const initializeGoogleSignIn = () => {
+            if (window.google) {
+                window.google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback: handleGoogleCallback
+                });
+                window.google.accounts.id.renderButton(
+                    document.getElementById("googleSignInDiv"),
+                    { theme: "outline", size: "large", width: "100%", text: "signup_with" }
+                );
+            }
+        };
+
+        const handleGoogleCallback = async (response) => {
+            setErrorMsg("");
+            const res = await handleGoogleLogin(response.credential);
+            if (res && res.success) {
+                navigate("/");
+            } else {
+                setErrorMsg(res?.error || "Google registration failed");
+            }
+        };
+
+        if (window.google) {
+            initializeGoogleSignIn();
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.google) {
+                    initializeGoogleSignIn();
+                    clearInterval(checkInterval);
+                }
+            }, 300);
+            return () => clearInterval(checkInterval);
+        }
+    }, [handleGoogleLogin, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -34,7 +75,8 @@ const Register = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background text-on-surface selection:bg-primary/30 flex flex-col justify-between">
+        <div className="min-h-screen bg-background text-on-surface selection:bg-primary/30 flex flex-col justify-between relative overflow-hidden">
+            <Tech3DBackground />
             {/* Top Navigation Bar */}
             <header className="border-b border-border-subtle sticky top-0 bg-background/80 backdrop-blur-md z-50">
                 <nav className="flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto">
@@ -80,63 +122,73 @@ const Register = () => {
                     </div>
 
                     {/* Auth Integration */}
-                    <div className="lg:col-span-5">
-                        <div className="glass-panel p-8 rounded-xl shadow-2xl relative overflow-hidden">
-                            <div className="flex border-b border-border-subtle mb-8">
-                                <button onClick={() => navigate("/login")} className="flex-1 pb-4 font-label-technical text-label-technical text-text-muted hover:text-on-surface transition-all">
-                                    LOGIN
-                                </button>
-                                <button className="flex-1 pb-4 font-label-technical text-label-technical text-on-surface border-b-2 border-primary transition-all">
-                                    REGISTER
-                                </button>
-                            </div>
+                    <div className="lg:col-span-5 relative z-10">
+                        <Tilt3D>
+                            <div className="glass-panel p-8 rounded-xl shadow-2xl relative overflow-hidden">
+                                <div className="flex border-b border-border-subtle mb-8">
+                                    <button onClick={() => navigate("/login")} className="flex-1 pb-4 font-label-technical text-label-technical text-text-muted hover:text-on-surface transition-all">
+                                        LOGIN
+                                    </button>
+                                    <button className="flex-1 pb-4 font-label-technical text-label-technical text-on-surface border-b-2 border-primary transition-all">
+                                        REGISTER
+                                    </button>
+                                </div>
 
-                            {/* Register Form */}
-                            <form className="space-y-4" onSubmit={handleSubmit}>
-                                {errorMsg && (
-                                    <div className="p-4 bg-error-container/20 border border-error-container text-error rounded font-body-sm flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-[18px]">error</span>
-                                        <span>{errorMsg}</span>
+                                {/* Register Form */}
+                                <form className="space-y-4" onSubmit={handleSubmit}>
+                                    {errorMsg && (
+                                        <div className="p-4 bg-error-container/20 border border-error-container text-error rounded font-body-sm flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[18px]">error</span>
+                                            <span>{errorMsg}</span>
+                                        </div>
+                                    )}
+                                    <div className="space-y-1.5">
+                                        <label className="font-label-technical text-label-technical text-text-muted">USERNAME</label>
+                                        <input 
+                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
+                                            placeholder="octocat" 
+                                            type="text"
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            required
+                                        />
                                     </div>
-                                )}
-                                <div className="space-y-1.5">
-                                    <label className="font-label-technical text-label-technical text-text-muted">USERNAME</label>
-                                    <input 
-                                        className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
-                                        placeholder="octocat" 
-                                        type="text"
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                        required
-                                    />
+                                    <div className="space-y-1.5">
+                                        <label className="font-label-technical text-label-technical text-text-muted">EMAIL ADDRESS</label>
+                                        <input 
+                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
+                                            placeholder="dev@interviewiq.ai" 
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="font-label-technical text-label-technical text-text-muted">NEW PASSWORD</label>
+                                        <input 
+                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
+                                            placeholder="••••••••" 
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <button className="w-full bg-primary text-on-primary py-4 font-bold rounded hover:bg-primary/90 transition-all mt-4 cursor-pointer">
+                                        INITIALIZE ACCOUNT
+                                    </button>
+                                </form>
+
+                                <div className="relative flex py-5 items-center">
+                                    <div className="flex-grow border-t border-border-subtle"></div>
+                                    <span className="flex-shrink mx-4 text-text-muted font-label-technical text-[10px]">SECURE CONNECT</span>
+                                    <div className="flex-grow border-t border-border-subtle"></div>
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="font-label-technical text-label-technical text-text-muted">EMAIL ADDRESS</label>
-                                    <input 
-                                        className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
-                                        placeholder="dev@interviewiq.ai" 
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="font-label-technical text-label-technical text-text-muted">NEW PASSWORD</label>
-                                    <input 
-                                        className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
-                                        placeholder="••••••••" 
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <button className="w-full bg-primary text-on-primary py-4 font-bold rounded hover:bg-primary/90 transition-all mt-4 cursor-pointer">
-                                    INITIALIZE ACCOUNT
-                                </button>
-                            </form>
-                        </div>
+                                
+                                <div id="googleSignInDiv" className="w-full flex justify-center"></div>
+                            </div>
+                        </Tilt3D>
                     </div>
                 </div>
             </main>

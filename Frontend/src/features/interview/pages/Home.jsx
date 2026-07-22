@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { generateReport, getReports, getPracticeHistory } from '../services/interview.api'
+import Tilt3D from '../components/Tilt3D'
+import Tech3DBackground from '../components/Tech3DBackground'
 
 const Home = () => {
     const { user, handleLogout } = useAuth()
@@ -134,7 +136,8 @@ const Home = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary/30 flex flex-col justify-between">
+        <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary/30 flex flex-col justify-between relative overflow-hidden">
+            <Tech3DBackground />
             {/* Top Navigation Bar */}
             <header className="border-b border-border-subtle sticky top-0 bg-background/85 backdrop-blur-md z-50">
                 <div className="flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto">
@@ -312,41 +315,42 @@ const Home = () => {
                                         : "bg-status-error/10 text-status-error"
 
                                 return (
-                                    <div 
-                                        key={rep._id}
-                                        onClick={() => navigate(`/reports/${rep._id}`)}
-                                        className="bg-surface-container border border-border-subtle p-6 rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer group flex flex-col justify-between"
-                                    >
-                                        <div className="flex justify-between items-start mb-6">
-                                            <div className="space-y-1 pr-4">
-                                                <h3 className="font-body-lg text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">{title}</h3>
-                                                <p className="font-label-technical text-label-technical text-text-muted line-clamp-1">
-                                                    ID: #{rep._id.substring(rep._id.length - 6).toUpperCase()}
-                                                </p>
+                                    <Tilt3D key={rep._id} className="flex">
+                                        <div 
+                                            onClick={() => navigate(`/reports/${rep._id}`)}
+                                            className="bg-surface-container border border-border-subtle p-6 rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer group flex flex-col justify-between w-full"
+                                        >
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div className="space-y-1 pr-4">
+                                                    <h3 className="font-body-lg text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">{title}</h3>
+                                                    <p className="font-label-technical text-label-technical text-text-muted line-clamp-1">
+                                                        ID: #{rep._id.substring(rep._id.length - 6).toUpperCase()}
+                                                    </p>
+                                                </div>
+                                                <div className={`w-12 h-12 rounded-full border-2 ${scoreColorClass} flex items-center justify-center font-bold font-label-technical`}>
+                                                    {matchScore}%
+                                                </div>
                                             </div>
-                                            <div className={`w-12 h-12 rounded-full border-2 ${scoreColorClass} flex items-center justify-center font-bold font-label-technical`}>
-                                                {matchScore}%
+                                            <div className="space-y-4">
+                                                <div className="flex flex-wrap gap-2">
+                                                    <span className={`px-2 py-0.5 rounded-sm text-[10px] font-label-technical uppercase ${scoreBgTintClass}`}>
+                                                        Match: {matchScore >= 80 ? "STRONG" : matchScore >= 60 ? "AVERAGE" : "GAP_DETECTED"}
+                                                    </span>
+                                                    <span className="px-2 py-0.5 rounded-sm bg-primary/10 text-primary text-[10px] font-label-technical uppercase">
+                                                        Gaps: {rep.skillGaps?.length || 0}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-center pt-4 border-t border-border-subtle/50">
+                                                    <span className="font-label-technical text-text-muted text-[10px]">
+                                                        {formatDate(rep.createdAt)}
+                                                    </span>
+                                                    <button className="text-primary material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        arrow_forward
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="space-y-4">
-                                            <div className="flex flex-wrap gap-2">
-                                                <span className={`px-2 py-0.5 rounded-sm text-[10px] font-label-technical uppercase ${scoreBgTintClass}`}>
-                                                    Match: {matchScore >= 80 ? "STRONG" : matchScore >= 60 ? "AVERAGE" : "GAP_DETECTED"}
-                                                </span>
-                                                <span className="px-2 py-0.5 rounded-sm bg-primary/10 text-primary text-[10px] font-label-technical uppercase">
-                                                    Gaps: {rep.skillGaps?.length || 0}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between items-center pt-4 border-t border-border-subtle/50">
-                                                <span className="font-label-technical text-text-muted text-[10px]">
-                                                    {formatDate(rep.createdAt)}
-                                                </span>
-                                                <button className="text-primary material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    arrow_forward
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    </Tilt3D>
                                 )
                             })}
                         </div>
@@ -379,41 +383,42 @@ const Home = () => {
                                 }
 
                                 return (
-                                    <div 
-                                        key={session._id}
-                                        onClick={() => setSelectedPractice(session)}
-                                        className="bg-surface-container border border-border-subtle p-6 rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer group flex flex-col justify-between"
-                                    >
-                                        <div className="flex justify-between items-start mb-6">
-                                            <div className="space-y-1 pr-4">
-                                                <h3 className="font-body-lg text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">
-                                                    Voice Practice Session
-                                                </h3>
-                                                <p className="font-label-technical text-label-technical text-text-muted">
-                                                    {session.questions?.length} Questions Asked
-                                                </p>
+                                    <Tilt3D key={session._id} className="flex">
+                                        <div 
+                                            onClick={() => setSelectedPractice(session)}
+                                            className="bg-surface-container border border-border-subtle p-6 rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer group flex flex-col justify-between w-full"
+                                        >
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div className="space-y-1 pr-4">
+                                                    <h3 className="font-body-lg text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">
+                                                        Voice Practice Session
+                                                    </h3>
+                                                    <p className="font-label-technical text-label-technical text-text-muted">
+                                                        {session.questions?.length} Questions Asked
+                                                    </p>
+                                                </div>
+                                                <div className={`w-12 h-12 rounded-full border-2 ${scoreColorClass} flex items-center justify-center font-bold font-label-technical`}>
+                                                    {session.overallScore}%
+                                                </div>
                                             </div>
-                                            <div className={`w-12 h-12 rounded-full border-2 ${scoreColorClass} flex items-center justify-center font-bold font-label-technical`}>
-                                                {session.overallScore}%
+                                            <div className="space-y-4">
+                                                <div className="flex flex-wrap gap-2">
+                                                    <span className="px-2 py-0.5 rounded-sm bg-primary/10 text-primary text-[10px] font-label-technical uppercase">
+                                                        Rating: {grade}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-center pt-4 border-t border-border-subtle/50">
+                                                    <span className="font-label-technical text-text-muted text-[10px]">
+                                                        {formatDate(session.createdAt)}
+                                                    </span>
+                                                    <span className="text-primary font-bold text-xs flex items-center gap-1 group-hover:underline">
+                                                        View Feedback
+                                                        <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="space-y-4">
-                                            <div className="flex flex-wrap gap-2">
-                                                <span className="px-2 py-0.5 rounded-sm bg-primary/10 text-primary text-[10px] font-label-technical uppercase">
-                                                    Rating: {grade}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between items-center pt-4 border-t border-border-subtle/50">
-                                                <span className="font-label-technical text-text-muted text-[10px]">
-                                                    {formatDate(session.createdAt)}
-                                                </span>
-                                                <span className="text-primary font-bold text-xs flex items-center gap-1 group-hover:underline">
-                                                    View Feedback
-                                                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    </Tilt3D>
                                 )
                             })}
                         </div>

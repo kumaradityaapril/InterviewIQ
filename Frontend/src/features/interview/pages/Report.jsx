@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router'
 import { getReportById } from '../services/interview.api'
 import { useAuth } from '../../auth/hooks/useAuth'
+import Tech3DBackground from '../components/Tech3DBackground'
+import Tilt3D from '../components/Tilt3D'
 
 const Report = () => {
     const { id } = useParams()
@@ -87,7 +89,8 @@ const Report = () => {
     const lowGaps = report.skillGaps?.filter(g => g.severity?.toLowerCase() === 'low') || []
 
     return (
-        <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary/30 flex flex-col justify-between">
+        <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary/30 flex flex-col justify-between relative overflow-hidden">
+            <Tech3DBackground />
             {/* Top Navigation Bar */}
             <header className="border-b border-border-subtle sticky top-0 bg-background/85 backdrop-blur-md z-50">
                 <div className="flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto">
@@ -142,49 +145,52 @@ const Report = () => {
                 {/* Bento Grid: Score & Technical Gaps */}
                 <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
                     {/* Radial Match Score */}
-                    <div className="md:col-span-4 bg-surface-container border border-border-subtle p-8 rounded-xl flex flex-col items-center justify-center relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary-container to-primary"></div>
-                        <h3 className="font-label-caps text-label-caps text-text-muted mb-8 self-start tracking-widest font-bold">OVERALL MATCH SCORE</h3>
-                        <div className="relative w-48 h-48 flex items-center justify-center">
-                            {/* Circular SVG Progress */}
-                            <svg className="w-full h-full transform -rotate-90">
-                                <circle className="text-surface-elevated" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="10"></circle>
-                                <circle
-                                    className="text-secondary transition-all duration-1000"
-                                    cx="96"
-                                    cy="96"
-                                    fill="transparent"
-                                    r="80"
-                                    stroke="currentColor"
-                                    strokeWidth="10"
-                                    strokeDasharray="502.6"
-                                    strokeDashoffset={502.6 - (502.6 * matchScore) / 100}
-                                    style={{ strokeLinecap: 'round' }}
-                                ></circle>
-                            </svg>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="font-display-hero text-5xl font-extrabold text-on-surface">
-                                    {matchScore}<span className="text-2xl font-normal">%</span>
-                                </span>
-                                <span className="font-label-technical text-label-technical text-status-success mt-1 tracking-widest">
-                                    {matchScore >= 80 ? "STRONG MATCH" : matchScore >= 60 ? "AVERAGE MATCH" : "GAP DETECTED"}
-                                </span>
+                    <Tilt3D className="md:col-span-4 flex z-10">
+                        <div className="bg-surface-container border border-border-subtle p-8 rounded-xl flex flex-col items-center justify-center relative overflow-hidden group w-full">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary-container to-primary"></div>
+                            <h3 className="font-label-caps text-label-caps text-text-muted mb-8 self-start tracking-widest font-bold">OVERALL MATCH SCORE</h3>
+                            <div className="relative w-48 h-48 flex items-center justify-center">
+                                {/* Circular SVG Progress */}
+                                <svg className="w-full h-full transform -rotate-90">
+                                    <circle className="text-surface-elevated" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="10"></circle>
+                                    <circle
+                                        className="text-secondary transition-all duration-1000"
+                                        cx="96"
+                                        cy="96"
+                                        fill="transparent"
+                                        r="80"
+                                        stroke="currentColor"
+                                        strokeWidth="10"
+                                        strokeDasharray="502.6"
+                                        strokeDashoffset={502.6 - (502.6 * matchScore) / 100}
+                                        style={{ strokeLinecap: 'round' }}
+                                    ></circle>
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className="font-display-hero text-5xl font-extrabold text-on-surface">
+                                        {matchScore}<span className="text-2xl font-normal">%</span>
+                                    </span>
+                                    <span className="font-label-technical text-label-technical text-status-success mt-1 tracking-widest">
+                                        {matchScore >= 80 ? "STRONG MATCH" : matchScore >= 60 ? "AVERAGE MATCH" : "GAP DETECTED"}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="mt-8 grid grid-cols-2 gap-4 w-full">
+                                <div className="text-center p-3 bg-surface-container-low rounded-lg border border-border-subtle">
+                                    <div className="text-text-muted font-label-caps text-[10px] tracking-wider font-bold">CULTURAL FIT</div>
+                                    <div className="font-label-technical text-label-technical text-on-surface font-bold mt-1">94%</div>
+                                </div>
+                                <div className="text-center p-3 bg-surface-container-low rounded-lg border border-border-subtle">
+                                    <div className="text-text-muted font-label-caps text-[10px] tracking-wider font-bold">TECHNICAL SKILLS</div>
+                                    <div className="font-label-technical text-label-technical text-on-surface font-bold mt-1">{matchScore}%</div>
+                                </div>
                             </div>
                         </div>
-                        <div className="mt-8 grid grid-cols-2 gap-4 w-full">
-                            <div className="text-center p-3 bg-surface-container-low rounded-lg border border-border-subtle">
-                                <div className="text-text-muted font-label-caps text-[10px] tracking-wider font-bold">CULTURAL FIT</div>
-                                <div className="font-label-technical text-label-technical text-on-surface font-bold mt-1">94%</div>
-                            </div>
-                            <div className="text-center p-3 bg-surface-container-low rounded-lg border border-border-subtle">
-                                <div className="text-text-muted font-label-caps text-[10px] tracking-wider font-bold">TECHNICAL SKILLS</div>
-                                <div className="font-label-technical text-label-technical text-on-surface font-bold mt-1">{matchScore}%</div>
-                            </div>
-                        </div>
-                    </div>
+                    </Tilt3D>
 
                     {/* Technical Gaps List */}
-                    <div className="md:col-span-8 bg-surface-container border border-border-subtle p-8 rounded-xl flex flex-col gap-6">
+                    <Tilt3D className="md:col-span-8 flex z-10">
+                        <div className="bg-surface-container border border-border-subtle p-8 rounded-xl flex flex-col gap-6 w-full">
                         <div className="flex justify-between items-center border-b border-border-subtle/50 pb-3">
                             <h3 className="font-label-caps text-label-caps text-text-muted tracking-widest font-bold">PRIORITY GAPS DETECTED</h3>
                             <div className="flex gap-2">
@@ -235,7 +241,8 @@ const Report = () => {
                             )}
                         </div>
                     </div>
-                </section>
+                </Tilt3D>
+            </section>
 
                 {/* Q&A Accordion Sections */}
                 <section className="space-y-6">
@@ -339,16 +346,18 @@ const Report = () => {
                                         <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold z-10 ring-4 ring-background">
                                             {plan.day}
                                         </div>
-                                        <div className="bg-surface-container border border-primary p-4 rounded-lg flex-grow hover:bg-surface-bright transition-all shadow-[0_0_15px_rgba(173,198,255,0.06)] min-h-[160px] flex flex-col justify-between">
-                                            <div>
-                                                <h5 className="font-label-caps text-label-caps text-primary mb-2 font-bold line-clamp-1">{plan.focus}</h5>
-                                                <ul className="text-on-surface font-body-sm space-y-1.5 list-disc list-inside">
-                                                    {plan.tasks && plan.tasks.slice(0, 2).map((t, idx) => (
-                                                        <li key={idx} className="line-clamp-2 text-xs leading-normal">{t}</li>
-                                                    ))}
-                                                </ul>
+                                        <Tilt3D className="flex-grow flex">
+                                            <div className="bg-surface-container border border-primary p-4 rounded-lg flex-grow hover:bg-surface-bright transition-all shadow-[0_0_15px_rgba(173,198,255,0.06)] min-h-[160px] flex flex-col justify-between w-full">
+                                                <div>
+                                                    <h5 className="font-label-caps text-label-caps text-primary mb-2 font-bold line-clamp-1">{plan.focus}</h5>
+                                                    <ul className="text-on-surface font-body-sm space-y-1.5 list-disc list-inside">
+                                                        {plan.tasks && plan.tasks.slice(0, 2).map((t, idx) => (
+                                                            <li key={idx} className="line-clamp-2 text-xs leading-normal">{t}</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </Tilt3D>
                                     </div>
                                 )
                             })}

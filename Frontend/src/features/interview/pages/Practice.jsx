@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router'
 import { startPracticeSession, respondPracticeQuestion, savePracticeSession } from '../services/interview.api'
 import { useAuth } from '../../auth/hooks/useAuth'
+import Tech3DBackground from '../components/Tech3DBackground'
+import Tilt3D from '../components/Tilt3D'
 
 const Practice = () => {
     const navigate = useNavigate()
@@ -391,7 +393,8 @@ const Practice = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary/30 flex flex-col justify-between">
+        <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary/30 flex flex-col justify-between relative overflow-hidden">
+            <Tech3DBackground />
             {/* Top Navigation Bar */}
             <header className="border-b border-border-subtle sticky top-0 bg-background/85 backdrop-blur-md z-50">
                 <div className="flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto">
@@ -423,37 +426,39 @@ const Practice = () => {
             ) : showResults ? (
                 /* Session Results scorecard dashboard */
                 <main className="flex-grow w-full max-w-4xl mx-auto px-container-margin py-10 flex flex-col gap-8 animate-fadeIn">
-                    <div className="glass-panel p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
-                        <div className="space-y-2 text-center md:text-left">
-                            <div className="font-label-technical text-label-technical text-primary">SESSION COMPLETED // SCORECARD</div>
-                            <h1 className="font-headline-lg text-3xl font-extrabold text-on-surface animate-slideUp">Your Practice Evaluation</h1>
-                            <p className="text-text-muted text-sm leading-relaxed max-w-md">
-                                The voice agent has graded your responses using Gemini AI model to evaluate core competence against the uploaded resume & job description.
-                            </p>
-                        </div>
-                        <div className="shrink-0 flex flex-col items-center gap-2">
-                            <div className="relative w-28 h-28 flex items-center justify-center">
-                                <svg className="w-full h-full transform -rotate-90">
-                                    <circle className="text-surface-elevated" cx="56" cy="56" fill="transparent" r="48" stroke="currentColor" stroke-width="6"></circle>
-                                    <circle 
-                                        className="text-primary transition-all duration-1000" 
-                                        cx="56" 
-                                        cy="56" 
-                                        fill="transparent" 
-                                        r="48" 
-                                        stroke="currentColor" 
-                                        strokeWidth="6" 
-                                        strokeDasharray="301.6" 
-                                        strokeDashoffset={301.6 - (301.6 * getAverageScore()) / 100}
-                                        style={{ strokeLinecap: 'round' }}
-                                    ></circle>
-                                </svg>
-                                <span className="absolute text-3xl font-extrabold text-on-surface">{getAverageScore()}%</span>
+                    <Tilt3D className="w-full">
+                        <div className="glass-panel p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+                            <div className="space-y-2 text-center md:text-left">
+                                <div className="font-label-technical text-label-technical text-primary">SESSION COMPLETED // SCORECARD</div>
+                                <h1 className="font-headline-lg text-3xl font-extrabold text-on-surface animate-slideUp">Your Practice Evaluation</h1>
+                                <p className="text-text-muted text-sm leading-relaxed max-w-md">
+                                    The voice agent has graded your responses using Gemini AI model to evaluate core competence against the uploaded resume & job description.
+                                </p>
                             </div>
-                            <span className="font-label-technical text-[10px] text-primary uppercase tracking-widest font-bold">OVERALL RATING</span>
+                            <div className="shrink-0 flex flex-col items-center gap-2">
+                                <div className="relative w-28 h-28 flex items-center justify-center">
+                                    <svg className="w-full h-full transform -rotate-90">
+                                        <circle className="text-surface-elevated" cx="56" cy="56" fill="transparent" r="48" stroke="currentColor" stroke-width="6"></circle>
+                                        <circle 
+                                            className="text-primary transition-all duration-1000" 
+                                            cx="56" 
+                                            cy="56" 
+                                            fill="transparent" 
+                                            r="48" 
+                                            stroke="currentColor" 
+                                            strokeWidth="6" 
+                                            strokeDasharray="301.6" 
+                                            strokeDashoffset={301.6 - (301.6 * getAverageScore()) / 100}
+                                            style={{ strokeLinecap: 'round' }}
+                                        ></circle>
+                                    </svg>
+                                    <span className="absolute text-3xl font-extrabold text-on-surface">{getAverageScore()}%</span>
+                                </div>
+                                <span className="font-label-technical text-[10px] text-primary uppercase tracking-widest font-bold">OVERALL RATING</span>
+                            </div>
                         </div>
-                    </div>
+                    </Tilt3D>
 
                     <div className="space-y-6">
                         {scorecard.map((item, index) => {
@@ -468,61 +473,63 @@ const Practice = () => {
                             }
                             
                             return (
-                                <div key={index} className="glass-panel rounded-xl p-6 flex flex-col gap-4 border border-border-subtle relative transition-all">
-                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-border-subtle pb-4">
-                                        <div className="flex items-center gap-3">
-                                            <span className="w-6 h-6 rounded-full bg-surface-container-highest border border-border-subtle flex items-center justify-center font-label-technical text-xs font-bold text-text-muted">
-                                                {index + 1}
-                                            </span>
-                                            <span className="px-2 py-0.5 rounded text-[10px] font-label-technical uppercase bg-primary/10 text-primary border border-primary/20">
-                                                QUESTION EVALUATION
-                                            </span>
-                                        </div>
-                                        <div className={`px-3 py-1 rounded-full border text-xs font-label-technical uppercase flex items-center gap-1.5 ${color}`}>
-                                            <span className="font-bold">{grade}</span>
-                                            <span>•</span>
-                                            <span>Score: {item.score}%</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <h3 className="font-headline-md text-lg text-on-surface font-bold leading-snug">
-                                            {item.question}
-                                        </h3>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                                        <div className="p-4 rounded-lg bg-surface-container-low border border-border-subtle space-y-2">
-                                            <div className="flex items-center gap-2 text-text-muted">
-                                                <span className="material-symbols-outlined text-sm">record_voice_over</span>
-                                                <span className="font-label-caps text-[9px] tracking-wider font-bold">YOUR RESPONSE</span>
-                                            </div>
-                                            <p className="text-xs text-on-surface-variant leading-relaxed italic whitespace-pre-line">
-                                                "{item.response}"
-                                            </p>
-                                        </div>
-                                        <div className="p-4 rounded-lg bg-surface-container/50 border border-border-subtle space-y-2">
-                                            <div className="flex items-center gap-2 text-primary">
-                                                <span className="material-symbols-outlined text-sm">feedback</span>
-                                                <span className="font-label-caps text-[9px] tracking-wider font-bold">GEMINI FEEDBACK</span>
-                                            </div>
-                                            <p className="text-xs text-on-surface-variant leading-relaxed whitespace-pre-line">
-                                                {item.feedback}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {item.keywords && item.keywords.length > 0 && (
-                                        <div className="flex flex-wrap items-center gap-2 pt-2">
-                                            <span className="font-label-caps text-[9px] tracking-wider font-bold text-text-muted">Matched skills:</span>
-                                            {item.keywords.map((w, i) => (
-                                                <span key={i} className="px-2 py-0.5 rounded-md text-[10px] bg-status-success/10 text-status-success border border-status-success/20 font-label-technical">
-                                                    {w}
+                                <Tilt3D key={index} className="flex">
+                                    <div className="glass-panel rounded-xl p-6 flex flex-col gap-4 border border-border-subtle relative transition-all w-full">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-border-subtle pb-4">
+                                            <div className="flex items-center gap-3">
+                                                <span className="w-6 h-6 rounded-full bg-surface-container-highest border border-border-subtle flex items-center justify-center font-label-technical text-xs font-bold text-text-muted">
+                                                    {index + 1}
                                                 </span>
-                                            ))}
+                                                <span className="px-2 py-0.5 rounded text-[10px] font-label-technical uppercase bg-primary/10 text-primary border border-primary/20">
+                                                    QUESTION EVALUATION
+                                                </span>
+                                            </div>
+                                            <div className={`px-3 py-1 rounded-full border text-xs font-label-technical uppercase flex items-center gap-1.5 ${color}`}>
+                                                <span className="font-bold">{grade}</span>
+                                                <span>•</span>
+                                                <span>Score: {item.score}%</span>
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
+
+                                        <div className="space-y-2">
+                                            <h3 className="font-headline-md text-lg text-on-surface font-bold leading-snug">
+                                                {item.question}
+                                            </h3>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                            <div className="p-4 rounded-lg bg-surface-container-low border border-border-subtle space-y-2">
+                                                <div className="flex items-center gap-2 text-text-muted">
+                                                    <span className="material-symbols-outlined text-sm">record_voice_over</span>
+                                                    <span className="font-label-caps text-[9px] tracking-wider font-bold">YOUR RESPONSE</span>
+                                                </div>
+                                                <p className="text-xs text-on-surface-variant leading-relaxed italic whitespace-pre-line">
+                                                    "{item.response}"
+                                                </p>
+                                            </div>
+                                            <div className="p-4 rounded-lg bg-surface-container/50 border border-border-subtle space-y-2">
+                                                <div className="flex items-center gap-2 text-primary">
+                                                    <span className="material-symbols-outlined text-sm">feedback</span>
+                                                    <span className="font-label-caps text-[9px] tracking-wider font-bold">GEMINI FEEDBACK</span>
+                                                </div>
+                                                <p className="text-xs text-on-surface-variant leading-relaxed whitespace-pre-line">
+                                                    {item.feedback}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {item.keywords && item.keywords.length > 0 && (
+                                            <div className="flex flex-wrap items-center gap-2 pt-2">
+                                                <span className="font-label-caps text-[9px] tracking-wider font-bold text-text-muted">Matched skills:</span>
+                                                {item.keywords.map((w, i) => (
+                                                    <span key={i} className="px-2 py-0.5 rounded-md text-[10px] bg-status-success/10 text-status-success border border-status-success/20 font-label-technical">
+                                                        {w}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </Tilt3D>
                             );
                         })}
                     </div>
@@ -616,10 +623,17 @@ const Practice = () => {
                                 <div className="glass-panel rounded-xl p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
                                     <div className="relative z-10 w-full md:w-48 shrink-0 flex flex-col items-center">
-                                        <div className={`aspect-square w-full rounded-lg bg-surface-container-highest border overflow-hidden flex items-center justify-center relative transition-all duration-300 ${
-                                            isAiSpeaking ? 'border-primary shadow-[0_0_15px_rgba(173,198,255,0.2)] scale-102' : 'border-border-subtle'
-                                        }`}>
-                                            <span className={`material-symbols-outlined text-primary text-[80px] ${isAiSpeaking ? 'animate-pulse' : ''}`}>smart_toy</span>
+                                        <div className="hologram-container w-full aspect-square">
+                                            <div className={`hologram-box aspect-square w-full rounded-lg bg-surface-container-highest border overflow-hidden flex items-center justify-center relative transition-all duration-300 ${
+                                                isAiSpeaking 
+                                                    ? 'border-primary shadow-[0_0_20px_rgba(173,198,255,0.4)] scale-102 [transform:rotateY(10deg)_rotateX(10deg)]' 
+                                                    : 'border-border-subtle [transform:rotateY(0deg)_rotateX(0deg)]'
+                                            }`}>
+                                                <div className="hologram-ring-1"></div>
+                                                <div className="hologram-ring-2"></div>
+                                                <span className={`material-symbols-outlined text-primary text-[80px] z-10 ${isAiSpeaking ? 'animate-pulse' : ''}`}>smart_toy</span>
+                                                <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none"></div>
+                                            </div>
                                         </div>
                                         <div className="mt-3 flex items-center gap-2">
                                             <div className={`w-2 h-2 rounded-full ${isAiSpeaking ? 'bg-primary' : 'bg-status-success'} animate-pulse`}></div>

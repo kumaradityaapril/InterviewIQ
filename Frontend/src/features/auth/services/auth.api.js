@@ -52,3 +52,15 @@ export async function getMe(){
         console.log(err)
     }
 }
+
+export async function googleLogin(token) {
+    try {
+        const response = await axios.post("http://localhost:3000/api/auth/google", { token }, {
+            withCredentials: true
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Google Auth API error:", err);
+        throw err;
+    }
+}

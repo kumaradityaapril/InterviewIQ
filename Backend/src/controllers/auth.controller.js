@@ -134,5 +134,83 @@ async function getMeController(req,res) {
     })
 }
 
+async function googleAuthController(req, res) {
+    try {
+        const { token } = req.body;
+        if (!token) {
+            return res.status(400).json({ message: "Google credential token is required." });
+        }
 
-module.exports = {registerUserController,loginUserController,logoutUserController,getMeController}
+        const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
+        if (!response.ok) {
+            return res.status(400).json({ message: "Invalid Google credential token." });
+        }
+
+        const payload = await response.json();
+        const { sub, email, name, email_verified } = payload;
+
+        if (!email_verified) {
+            return res.status(400).json({ message: "Google email is not verified." });
+        }
+
+        const client_id = process.env.GOOGLE_CLIENT_ID;
+        if (client_id && payload.aud !== client_id) {
+            console.warn(`Token client ID mismatch. Expected: ${client_id}, Found: ${payload.aud}`);
+            return res.status(400).json({ message: "Unauthorized: Client ID mismatch." });
+        }
+
+        let user = await userModel.findOne({
+            $or: [{ googleId: sub }, { email }]
+        });
+
+        if (!user) {
+            let cleanName = name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+            let username = cleanName + Math.floor(100 + Math.random() * 900);
+            
+            let existingUsername = await userModel.findOne({ username });
+            while (existingUsername) {
+                username = cleanName + Math.floor(100 + Math.random() * 900);
+                existingUsername = await userModel.findOne({ username });
+            }
+
+            const randPass = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+            const hashedPassword = await bcrypt.hash(randPass, 10);
+
+            user = await userModel.create({
+                username,
+                email,
+                password: hashedPassword,
+                googleId: sub
+            });
+        } else {
+            if (!user.googleId) {
+                user.googleId = sub;
+                await user.save();
+            }
+        }
+
+        const jwtToken = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
+        res.cookie("token", jwtToken);
+        res.status(200).json({
+            message: "User logged in successfully via Google",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error("Google Authentication error:", error);
+        res.status(500).json({
+            message: "Failed to authenticate via Google",
+            error: error.message
+        });
+    }
+}
+
+module.exports = {registerUserController,loginUserController,logoutUserController,getMeController,googleAuthController}

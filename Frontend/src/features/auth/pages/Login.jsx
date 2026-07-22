@@ -1,13 +1,54 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
+import Tech3DBackground from '../../interview/components/Tech3DBackground'
+import Tilt3D from '../../interview/components/Tilt3D'
 
 const Login = () => {
-    const { user, Loading, handleLogin, handleLogout } = useAuth()
+    const { user, Loading, handleLogin, handleLogout, handleGoogleLogin } = useAuth()
     const navigate = useNavigate()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorMsg, setErrorMsg] = useState("")
+
+    useEffect(() => {
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        
+        const initializeGoogleSignIn = () => {
+            if (window.google) {
+                window.google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback: handleGoogleCallback
+                });
+                window.google.accounts.id.renderButton(
+                    document.getElementById("googleSignInDiv"),
+                    { theme: "outline", size: "large", width: "100%", text: "continue_with" }
+                );
+            }
+        };
+
+        const handleGoogleCallback = async (response) => {
+            setErrorMsg("");
+            const res = await handleGoogleLogin(response.credential);
+            if (res && res.success) {
+                navigate("/");
+            } else {
+                setErrorMsg(res?.error || "Google authentication failed");
+            }
+        };
+
+        if (window.google) {
+            initializeGoogleSignIn();
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.google) {
+                    initializeGoogleSignIn();
+                    clearInterval(checkInterval);
+                }
+            }, 300);
+            return () => clearInterval(checkInterval);
+        }
+    }, [handleGoogleLogin, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -70,7 +111,8 @@ const Login = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background text-on-surface selection:bg-primary/30 flex flex-col justify-between">
+        <div className="min-h-screen bg-background text-on-surface selection:bg-primary/30 flex flex-col justify-between relative overflow-hidden">
+            <Tech3DBackground />
             {/* Top Navigation Bar */}
             <header className="border-b border-border-subtle sticky top-0 bg-background/80 backdrop-blur-md z-50">
                 <nav className="flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto">
@@ -116,53 +158,63 @@ const Login = () => {
                     </div>
 
                     {/* Auth Integration */}
-                    <div className="lg:col-span-5">
-                        <div className="glass-panel p-8 rounded-xl shadow-2xl relative overflow-hidden">
-                            <div className="flex border-b border-border-subtle mb-8">
-                                <button className="flex-1 pb-4 font-label-technical text-label-technical text-on-surface border-b-2 border-primary transition-all">
-                                    LOGIN
-                                </button>
-                                <button onClick={() => navigate("/register")} className="flex-1 pb-4 font-label-technical text-label-technical text-text-muted hover:text-on-surface transition-all">
-                                    REGISTER
-                                </button>
-                            </div>
+                    <div className="lg:col-span-5 relative z-10">
+                        <Tilt3D>
+                            <div className="glass-panel p-8 rounded-xl shadow-2xl relative overflow-hidden">
+                                <div className="flex border-b border-border-subtle mb-8">
+                                    <button className="flex-1 pb-4 font-label-technical text-label-technical text-on-surface border-b-2 border-primary transition-all">
+                                        LOGIN
+                                    </button>
+                                    <button onClick={() => navigate("/register")} className="flex-1 pb-4 font-label-technical text-label-technical text-text-muted hover:text-on-surface transition-all">
+                                        REGISTER
+                                    </button>
+                                </div>
 
-                            {/* Login Form */}
-                            <form className="space-y-6" onSubmit={handleSubmit}>
-                                {errorMsg && (
-                                    <div className="p-4 bg-error-container/20 border border-error-container text-error rounded font-body-sm flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-[18px]">error</span>
-                                        <span>{errorMsg}</span>
+                                {/* Login Form */}
+                                <form className="space-y-6" onSubmit={handleSubmit}>
+                                    {errorMsg && (
+                                        <div className="p-4 bg-error-container/20 border border-error-container text-error rounded font-body-sm flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[18px]">error</span>
+                                            <span>{errorMsg}</span>
+                                        </div>
+                                    )}
+                                    <div className="space-y-1.5">
+                                        <label className="font-label-technical text-label-technical text-text-muted">IDENTIFIER (EMAIL)</label>
+                                        <input 
+                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
+                                            placeholder="dev@interviewiq.ai" 
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                        />
                                     </div>
-                                )}
-                                <div className="space-y-1.5">
-                                    <label className="font-label-technical text-label-technical text-text-muted">IDENTIFIER (EMAIL)</label>
-                                    <input 
-                                        className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
-                                        placeholder="dev@interviewiq.ai" 
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                    />
+                                    <div className="space-y-1.5">
+                                        <label className="font-label-technical text-label-technical text-text-muted">SECURITY TOKEN (PASSWORD)</label>
+                                        <input 
+                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
+                                            placeholder="••••••••" 
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <button className="w-full bg-primary text-on-primary py-4 font-bold rounded flex justify-center items-center gap-2 hover:bg-primary/90 transition-all cursor-pointer">
+                                        <span>AUTHENTICATE</span>
+                                        <span className="material-symbols-outlined text-[18px]">fingerprint</span>
+                                    </button>
+                                </form>
+
+                                <div className="relative flex py-5 items-center">
+                                    <div className="flex-grow border-t border-border-subtle"></div>
+                                    <span className="flex-shrink mx-4 text-text-muted font-label-technical text-[10px]">SECURE CONNECT</span>
+                                    <div className="flex-grow border-t border-border-subtle"></div>
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="font-label-technical text-label-technical text-text-muted">SECURITY TOKEN (PASSWORD)</label>
-                                    <input 
-                                        className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
-                                        placeholder="••••••••" 
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <button className="w-full bg-primary text-on-primary py-4 font-bold rounded flex justify-center items-center gap-2 hover:bg-primary/90 transition-all cursor-pointer">
-                                    <span>AUTHENTICATE</span>
-                                    <span className="material-symbols-outlined text-[18px]">fingerprint</span>
-                                </button>
-                            </form>
-                        </div>
+                                
+                                <div id="googleSignInDiv" className="w-full flex justify-center"></div>
+                            </div>
+                        </Tilt3D>
                     </div>
                 </div>
             </main>
