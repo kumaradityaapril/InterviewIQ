@@ -18,7 +18,7 @@ app.use(cors({
                           origin.startsWith("http://localhost:") || 
                           origin.startsWith("http://127.0.0.1:");
         if (isAllowed) {
-            callback(null, true);
+            callback(null, origin);
         } else {
             callback(new Error("CORS Policy Violation: Request from unauthorized origin"));
         }
