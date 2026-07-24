@@ -171,7 +171,7 @@ const Profile = () => {
                                     <label className="text-[10px] font-label-technical text-text-muted uppercase font-bold">Full Name</label>
                                     <input 
                                         type="text" 
-                                        className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-2.5 text-on-surface focus:outline-none focus:border-primary text-black font-semibold"
+                                        className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-2.5 text-on-surface focus:outline-none focus:border-primary text-white font-semibold"
                                         value={newName} 
                                         onChange={(e) => setNewName(e.target.value)}
                                     />
@@ -184,7 +184,7 @@ const Profile = () => {
                                             <input 
                                                 type="password" 
                                                 placeholder="••••••••"
-                                                className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-2.5 text-on-surface focus:outline-none focus:border-primary text-black"
+                                                className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-2.5 text-on-surface focus:outline-none focus:border-primary text-white"
                                                 value={newPassword} 
                                                 onChange={(e) => setNewPassword(e.target.value)}
                                             />
@@ -194,7 +194,7 @@ const Profile = () => {
                                             <input 
                                                 type="password" 
                                                 placeholder="••••••••"
-                                                className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-2.5 text-on-surface focus:outline-none focus:border-primary text-black"
+                                                className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-2.5 text-on-surface focus:outline-none focus:border-primary text-white"
                                                 value={confirmPassword} 
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                             />

@@ -17,7 +17,7 @@ const interviewRouter = express.Router()
 
 interviewRouter.use(authedRateLimiter)
 
-interviewRouter.post("/",authMiddleware.authUser,upload.single("resume"),validate(generateReportSchema),interviewController.generateInterviewReportController)
+interviewRouter.post("/",authMiddleware.authUser,upload,validate(generateReportSchema),interviewController.generateInterviewReportController)
 interviewRouter.get("/",authMiddleware.authUser,interviewController.getUserReportsController)
 interviewRouter.post("/practice/start",authMiddleware.authUser,validate(startPracticeSchema),interviewController.startPracticeSessionController)
 interviewRouter.post("/practice/respond",authMiddleware.authUser,validate(respondPracticeSchema),interviewController.respondPracticeQuestionController)

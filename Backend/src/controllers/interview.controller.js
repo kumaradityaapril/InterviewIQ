@@ -6,9 +6,6 @@ const practiceSessionModel = require("../models/practiceSession.model")
 async function generateInterviewReportController(req,res){
     try {
         const resumeFile = req.file
-        if (!resumeFile) {
-            return res.status(400).json({ message: "Resume file is required" })
-        }
 
         // Use PDFParse class constructor to parse PDF text
         const parser = new pdfParse.PDFParse({ data: resumeFile.buffer })

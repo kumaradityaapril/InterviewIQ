@@ -333,7 +333,7 @@ const ResumeFormPage = () => {
                                         <input
                                             type="text"
                                             placeholder="e.g. Senior Frontend Engineer"
-                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary placeholder-text-muted/65 font-semibold text-black"
+                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary placeholder-text-muted/65 font-semibold text-white"
                                             value={title}
                                             onChange={(e) => setTitle(e.target.value)}
                                         />
@@ -364,7 +364,7 @@ const ResumeFormPage = () => {
                                             required
                                             type="text"
                                             placeholder="John Doe"
-                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-black"
+                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-white"
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                         />
@@ -375,7 +375,7 @@ const ResumeFormPage = () => {
                                             required
                                             type="email"
                                             placeholder="john.doe@example.com"
-                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-black"
+                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-white"
                                             value={contact.email}
                                             onChange={(e) => setContact({...contact, email: e.target.value})}
                                         />
@@ -385,7 +385,7 @@ const ResumeFormPage = () => {
                                         <input
                                             type="tel"
                                             placeholder="+1 (555) 123-4567"
-                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-black"
+                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-white"
                                             value={contact.phone}
                                             onChange={(e) => setContact({...contact, phone: e.target.value})}
                                         />
@@ -395,7 +395,7 @@ const ResumeFormPage = () => {
                                         <input
                                             type="text"
                                             placeholder="San Francisco, CA"
-                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-black"
+                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-white"
                                             value={contact.location}
                                             onChange={(e) => setContact({...contact, location: e.target.value})}
                                         />
@@ -405,7 +405,7 @@ const ResumeFormPage = () => {
                                         <input
                                             type="text"
                                             placeholder="github.com/johndoe"
-                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-black"
+                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-white"
                                             value={contact.github}
                                             onChange={(e) => setContact({...contact, github: e.target.value})}
                                         />
@@ -415,7 +415,7 @@ const ResumeFormPage = () => {
                                         <input
                                             type="text"
                                             placeholder="linkedin.com/in/johndoe"
-                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-black"
+                                            className="w-full text-sm bg-surface-container border border-border-subtle rounded-lg p-3 text-on-surface focus:outline-none focus:border-primary font-semibold text-white"
                                             value={contact.linkedin}
                                             onChange={(e) => setContact({...contact, linkedin: e.target.value})}
                                         />
@@ -472,19 +472,19 @@ const ResumeFormPage = () => {
                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                                 <input
                                                     placeholder="Role (e.g. Frontend Dev)"
-                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                     value={exp.role}
                                                     onChange={(e) => handleExperienceChange(idx, "role", e.target.value)}
                                                 />
                                                 <input
                                                     placeholder="Company (e.g. Google)"
-                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                     value={exp.company}
                                                     onChange={(e) => handleExperienceChange(idx, "company", e.target.value)}
                                                 />
                                                 <input
                                                     placeholder="Duration (e.g. 2022 - Present)"
-                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                     value={exp.duration}
                                                     onChange={(e) => handleExperienceChange(idx, "duration", e.target.value)}
                                                 />
@@ -507,7 +507,7 @@ const ResumeFormPage = () => {
                                                         <div key={bulletIdx} className="flex gap-2 items-center">
                                                             <input
                                                                 placeholder="e.g. Led development of new dashboard modules using React"
-                                                                className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                                className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                                 value={bullet}
                                                                 onChange={(e) => handleExperienceBulletChange(idx, bulletIdx, e.target.value)}
                                                             />
@@ -577,13 +577,13 @@ const ResumeFormPage = () => {
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                 <input
                                                     placeholder="Project Name (e.g. Chat App)"
-                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                     value={proj.name}
                                                     onChange={(e) => handleProjectChange(idx, "name", e.target.value)}
                                                 />
                                                 <input
                                                     placeholder="Technologies (e.g. React, Node, WebSockets)"
-                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                    className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                     value={proj.technologies}
                                                     onChange={(e) => handleProjectChange(idx, "technologies", e.target.value)}
                                                 />
@@ -606,7 +606,7 @@ const ResumeFormPage = () => {
                                                         <div key={bulletIdx} className="flex gap-2 items-center">
                                                             <input
                                                                 placeholder="e.g. Built fully real-time responsive chat interface reducing latency by 120ms"
-                                                                className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                                className="w-full text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                                 value={bullet}
                                                                 onChange={(e) => handleProjectBulletChange(idx, bulletIdx, e.target.value)}
                                                             />
@@ -667,7 +667,7 @@ const ResumeFormPage = () => {
                                         <div key={idx} className="flex gap-2 items-center">
                                             <input
                                                 placeholder="e.g. Languages: JavaScript, Rust"
-                                                className="w-full text-xs bg-surface-container border border-border-subtle rounded p-2 text-black font-semibold"
+                                                className="w-full text-xs bg-surface-container border border-border-subtle rounded p-2 text-white font-semibold"
                                                 value={skill}
                                                 onChange={(e) => handleListItemChange(setSkills, idx, e.target.value)}
                                             />
@@ -710,19 +710,19 @@ const ResumeFormPage = () => {
                                             </button>
                                             <input
                                                 placeholder="Degree (e.g. B.S. CS)"
-                                                className="text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                className="text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                 value={edu.degree}
                                                 onChange={(e) => handleEducationChange(idx, "degree", e.target.value)}
                                             />
                                             <input
                                                 placeholder="Institution (e.g. MIT)"
-                                                className="text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                className="text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                 value={edu.institution}
                                                 onChange={(e) => handleEducationChange(idx, "institution", e.target.value)}
                                             />
                                             <input
                                                 placeholder="Graduation Year (e.g. 2021)"
-                                                className="text-xs bg-background border border-border-subtle rounded p-2 text-black font-semibold"
+                                                className="text-xs bg-background border border-border-subtle rounded p-2 text-white font-semibold"
                                                 value={edu.year}
                                                 onChange={(e) => handleEducationChange(idx, "year", e.target.value)}
                                             />
@@ -751,7 +751,7 @@ const ResumeFormPage = () => {
                                             <div key={idx} className="flex gap-2 items-center">
                                                 <input
                                                     placeholder="AWS Certified Solutions Architect"
-                                                    className="w-full text-xs bg-surface-container border border-border-subtle rounded p-2 text-black font-semibold"
+                                                    className="w-full text-xs bg-surface-container border border-border-subtle rounded p-2 text-white font-semibold"
                                                     value={cert}
                                                     onChange={(e) => handleListItemChange(setCertifications, idx, e.target.value)}
                                                 />
@@ -783,7 +783,7 @@ const ResumeFormPage = () => {
                                             <div key={idx} className="flex gap-2 items-center">
                                                 <input
                                                     placeholder="First Place in Hackathon"
-                                                    className="w-full text-xs bg-surface-container border border-border-subtle rounded p-2 text-black font-semibold"
+                                                    className="w-full text-xs bg-surface-container border border-border-subtle rounded p-2 text-white font-semibold"
                                                     value={ach}
                                                     onChange={(e) => handleListItemChange(setAchievements, idx, e.target.value)}
                                                 />
