@@ -17,6 +17,7 @@ const Report = () => {
     // Accordion expansion states
     const [expandedTech, setExpandedTech] = useState({})
     const [expandedBehavioral, setExpandedBehavioral] = useState({})
+    const [selectedDayPlan, setSelectedDayPlan] = useState(null)
 
     useEffect(() => {
         const fetchReportDetails = async () => {
@@ -352,9 +353,12 @@ const Report = () => {
                                             {plan.day}
                                         </div>
                                         <Tilt3D className="flex-grow flex">
-                                            <div className="bg-surface-container border border-primary p-4 rounded-lg flex-grow hover:bg-surface-bright transition-all shadow-[0_0_15px_rgba(173,198,255,0.06)] min-h-[160px] flex flex-col justify-between w-full">
+                                            <div 
+                                                onClick={() => setSelectedDayPlan(plan)}
+                                                className="bg-surface-container border border-primary p-4 rounded-lg flex-grow hover:bg-surface-bright transition-all shadow-[0_0_15px_rgba(173,198,255,0.06)] min-h-[160px] flex flex-col justify-between w-full cursor-pointer hover:border-secondary hover:shadow-[0_0_20px_rgba(0,238,252,0.15)] group/box"
+                                            >
                                                 <div>
-                                                    <h5 className="font-label-caps text-label-caps text-primary mb-2 font-bold line-clamp-1">{plan.focus}</h5>
+                                                    <h5 className="font-label-caps text-label-caps text-primary mb-2 font-bold line-clamp-1 group-hover/box:text-secondary transition-colors">{plan.focus}</h5>
                                                     <ul className="text-on-surface font-body-sm space-y-1.5 list-disc list-inside">
                                                         {plan.tasks && plan.tasks.slice(0, 2).map((t, idx) => (
                                                             <li key={idx} className="line-clamp-2 text-xs leading-normal">{t}</li>
@@ -371,6 +375,55 @@ const Report = () => {
                 </section>
             </main>
 
+            {/* Roadmap Detail Pop-up Modal */}
+            {selectedDayPlan && (
+                <div className="fixed inset-0 bg-background/80 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-fadeIn">
+                    <div className="bg-surface-container border border-border-subtle rounded-xl max-w-xl w-full shadow-2xl relative overflow-hidden flex flex-col z-10 animate-scaleUp">
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary to-secondary"></div>
+                        <div className="p-6 space-y-6">
+                            {/* Header */}
+                            <div className="flex justify-between items-start">
+                                <div className="space-y-1">
+                                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-sm">
+                                        {selectedDayPlan.day}
+                                    </div>
+                                    <span className="font-label-technical text-label-technical text-primary ml-2 uppercase tracking-widest font-bold">Readiness Step</span>
+                                    <h4 className="font-headline-md text-xl text-on-surface font-extrabold mt-2">{selectedDayPlan.focus}</h4>
+                                </div>
+                                <button 
+                                    onClick={() => setSelectedDayPlan(null)}
+                                    className="material-symbols-outlined text-text-muted hover:text-on-surface transition-colors cursor-pointer"
+                                >
+                                    close
+                                </button>
+                            </div>
+
+                            {/* Tasks List */}
+                            <div className="space-y-4">
+                                <span className="font-label-technical text-label-technical text-text-muted uppercase font-bold">Planned Tasks</span>
+                                <ul className="space-y-3 font-body-md text-on-surface">
+                                    {selectedDayPlan.tasks && selectedDayPlan.tasks.map((task, idx) => (
+                                        <li key={idx} className="flex items-start gap-3 bg-surface-container-high/40 border border-border-subtle/50 p-4 rounded-lg">
+                                            <span className="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+                                            <span className="text-sm leading-relaxed">{task}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Footer Controls */}
+                        <div className="border-t border-border-subtle p-4 flex justify-end bg-surface-container-low">
+                            <button 
+                                onClick={() => setSelectedDayPlan(null)} 
+                                className="px-6 py-2.5 bg-primary text-on-primary rounded-lg font-bold text-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                            >
+                                Close Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
