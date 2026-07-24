@@ -1,124 +1,135 @@
 # InterviewIQ 🚀
 
-An elite-tier, AI-powered diagnostic and preparation platform designed for high-stakes technical candidates. Built using **React, Tailwind CSS, Node.js (Express), MongoDB**, and powered by the **Google Gemini API**, InterviewIQ enables candidates to compare credentials against target roles, simulate conversational technical rounds with real-time feedback, and compile publication-quality Serif LaTeX resumes.
+InterviewIQ is a premium, AI-powered diagnostic and preparation platform built for high-stakes technical candidates. By combining **React, Node.js (Express), MongoDB**, and the **Google Gemini API**, InterviewIQ enables job seekers to analyze their profiles against target job descriptions, undergo conversational speech simulation with live analytical feedback, and compile print-perfect Serif LaTeX resumes.
 
 ---
 
-## 📸 Platform Walkthrough
+## 📸 Platform Walkthrough & Features
 
-### 1. Landing & Authentication Page
-A premium landing page introducing the candidate to the core value proposition and outlining the 3-step preparation loop before authentication.
-![Visitor Landing](./screenshots/login_page.png)
+### 1. Unified Candidate Dashboard
+Access historical readiness profiles, browse past scorecards, and review your practice session feedback. The dashboard serves as a candidate command center.
+*   **Resume Parse & Match**: Upload standard PDF resumes to extract text context.
+*   **Job & Self-Objective Alignment**: Compare credentials alongside career objectives against target role descriptions.
+*   **Readiness History**: Access a historic chronological feed of previous reports.
 
-### 2. Candidate Dashboard
-Enter the target job description and upload your resume to generate a comprehensive AI readiness profile, or access historical reports.
-![Dashboard Overview](./screenshots/dashboard.png)
-
-### 3. Readiness Report & 7-Day Roadmap
-Understand semantic alignment, technical gaps, and behavioral readiness. Click on any block in the system-generated **Readiness Roadmap** to display daily task popups.
-![Readiness Report Analysis](./screenshots/readiness_report_analysis.png)
-![Readiness Report Scorecard](./screenshots/readiness_report_scorecard.png)
-
-### 4. Interactive Speech Simulator
-Simulate conversational technical rounds. Speak or type your responses to receive live, real-time WPM pacing calculations, dynamic keyword check tags, and STAR structure indicators.
-![Speech Practice Simulator](./screenshots/practice_simulator.png)
-
-### 5. ATS Serif LaTeX Resume Builder
-Rewrite and optimize bullet points using Gemini, ensuring action verbs and keywords match the target role while budgeting space to fit a standard one-page A4 print layout.
-![Resume Builder Form](./screenshots/resume_builder_form.webp)
-![Compiled Resume Preview](./screenshots/resume_builder_compiled.png)
+![Dashboard Past Analyses](./screenshots/dashboard_past_analyses.png)
 
 ---
 
-## ⚡ Core Features
+### 2. Deep Match Diagnostics & 7-Day Roadmap
+Understand how you rank against the job description with visual scoring metrics, detailed questions guides, and a complete study plan.
+*   **Technical & Behavioral Accordions**: Gain visibility into the interviewer's intent and review recommended answering strategies.
+*   **Severity-Scaled Skill Gaps**: Highlights key discrepancies between your experience and target role requirements (High/Medium/Low priority).
+*   **Interactive 7-Day Roadmap**: Shows a chronological timeline. Each day box is interactive; clicking a block opens a pop-up modal on the same page showing full task descriptions.
 
-*   **AI Match Diagnostics**: Deep semantic matching comparing candidate resume against target role descriptions.
-*   **Speech Simulation**: Real-time, continuous microphone speech-to-text transcript scoring WPM, STAR method, and topic relevance.
-*   **Serif LaTeX Engine**: Tailors credentials and compiles print-perfect LaTeX resumes enforcing A4 layouts.
-*   **7-Day Roadmap**: High-fidelity timeline breakdown showing step-by-step goals for interview prep.
-*   **Dynamic Keyword Tracking**: Pivot target tags based on the question topic (Technical vs. Behavioral).
+![Roadmap Timeline Overview](./screenshots/readiness_report_analysis.png)
 
 ---
 
-## 🏗️ Technical Architecture
+### 3. Interactive Speech Simulator
+Practice real-time technical rounds with a conversational AI agent using voice or text inputs.
+*   **Real-time WPM Pacing**: An active timer tracks your typing/speaking rate dynamically to make sure you stay in the optimal 120-160 WPM communication range.
+*   **STAR Structure Detector**: Analyzes your response text for Situation, Task, Action, and Result indicators in real-time, displaying structural progress bars.
+*   **Dynamic Keyword Tracker**: Dynamically loads relevant vocabulary terms based on the question topic (Technical Architecture vs. Team Alignment) and lights them up as you use them.
+*   **Live Match Score**: Computes your performance score out of 100 on the fly.
 
-### Tech Stack
-*   **Frontend**: React (v18), React Router (v7), Vite, Tailwind CSS, HSL Theming, Material Symbols, Glassmorphism design tokens.
-*   **Backend**: Node.js (Express), MongoDB (Mongoose), Google Generative AI (`@google/generative-ai`), Multer.
+![Speech Simulator](./screenshots/practice_simulator.png)
 
-### Monorepo Structure
-```bash
-InterviewIQ/
-├── Backend/                 # Express Server & AI Services
-│   ├── src/
-│   │   ├── controllers/     # Auth & Interview controllers
-│   │   ├── models/          # Mongoose Schemas (User, Report, Practice)
-│   │   ├── routes/          # Express API endpoints
-│   │   ├── services/        # Gemini AI Prompt Engineering
-│   │   └── app.js           # Server Initialization
-├── Frontend/                # React UI Applications
-│   ├── src/
-│   │   ├── features/
-│   │   │   ├── auth/        # Login, Register, Profile Pages
-│   │   │   └── interview/   # Dashboard, Practice, Resume Builder Pages
-│   │   └── main.jsx
-├── screenshots/             # Visual screenshots for documentation
-└── README.md                # System documentation
+---
+
+### 4. ATS Serif LaTeX Resume Builder
+Rewrite, structure, and optimize your resume's achievements to align directly with target keywords using AI, keeping layouts clean and clean.
+*   **Gemini Bullet Enhancer**: Refactors job bullet points to include action verbs and relevant technical terms.
+*   **Enforced One-Page A4 Budget**: The builder interface restricts page length constraints, avoiding overflow.
+*   **Integrated PDF Compiler**: Edit, compile, preview, and print clean Serif LaTeX documents instantly.
+
+![LaTeX Resume Builder Form](./screenshots/resume_builder_form.webp)
+![LaTeX Resume Builder Compiled Preview](./screenshots/resume_builder_compiled.png)
+
+---
+
+## 🏗️ Technical Architecture & Monorepo
+
+### Architecture Sequence
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Frontend as React App
+    participant Backend as Node/Express API
+    participant MongoDB as MongoDB Database
+    participant Gemini as Gemini 2.5 Flash
+
+    User->>Frontend: Enter JD, Self-Desc & Upload PDF Resume
+    Frontend->>Backend: POST /api/interview (Multipart FormData)
+    Note over Backend: Middleware extracts PDF buffer<br/>pdf-parse extracts raw text
+    Backend->>Gemini: generateContent(Resume Text, JD, Self-Desc) with responseSchema
+    Gemini-->>Backend: JSON Response (matchScore, Q&A, gaps, prep plan)
+    Backend->>MongoDB: Save interviewReport record (with user ID ref)
+    MongoDB-->>Backend: Success / Saved Document
+    Backend-->>Frontend: HTTP 201 JSON (Success message & saved report details)
+    Frontend->>User: Display Interview IQ Report Dashboard
 ```
 
+### Folder Layout
+*   **`Backend/`**: Node.js & Express API services. Manages user authentication sessions, JWT validations, PDF text parses (`pdf-parse`), and Google Gen AI API prompt orchestrations.
+*   **`Frontend/`**: React application bundled using Vite. Features theme-driven styling (Vanilla CSS + HSL design variables), robust routes (`react-router` v7), and continuous speech transcription handles.
+*   **`screenshots/`**: Directory containing assets for documentation and walkthroughs.
+
 ---
 
-## 🔒 Security & Robustness Standards
-*   **Strict Schema Validation**: Implemented rigid type, length, and format validations on all request payloads to prevent security exploits.
-*   **Isolated Storage**: Uploaded PDF files are stored outside the web root directory with randomized naming to block code execution.
-*   **Generic Error Responses**: Suppresses server stack traces, database schema details, and filesystem locations in client errors, replacing them with generic messages while logging details server-side.
-*   **Zero Hardcoded Keys**: Relies entirely on secure environment configurations (`.env`) for JWT secrets and Gemini API keys.
+## 🔒 Security Standards
+
+1.  **Strict Request Schema Validation**: Every API endpoint validates fields (checking types, lengths, and exact formats) before processing requests, preventing code injections and parameter tampering.
+2.  **Isolated Storage & File Uploads**: Uploaded files undergo MIME-type checks and are stored with randomized names outside the web-root directory, making it impossible to upload executable scripts.
+3.  **Generic Client Errors**: Clients never receive raw database errors, stack traces, or server directory locations. The server logs comprehensive traces internally while responding with generic, user-safe error messages.
+4.  **Zero Hardcoded Keys**: The system relies on secure environmental variables (`.env`) for secrets, such as Mongo connection URIs, JWT signing tokens, and Google API keys.
 
 ---
 
 ## ⚙️ Local Setup
 
-### Prerequisites
+### Setup Requirements
 *   Node.js (v18+)
-*   MongoDB Instance
-*   Google Gemini API Key
+*   MongoDB Local/Cloud instance
+*   Google Gen AI (Gemini) API Key
 
-### 1. Backend Configuration
-1. Navigate to the `Backend` directory:
-   ```bash
-   cd Backend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file in the root of `Backend` and add:
-   ```env
-   PORT=5000
-   MONGO_URI=mongodb://localhost:27017/interviewiq
-   JWT_SECRET=your_jwt_secret_key_here
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
-4. Start the backend developer server:
-   ```bash
-   npm run dev
-   ```
+### Step 1: Run the Backend Server
+1.  Navigate to the `Backend` directory:
+    ```bash
+    cd Backend
+    ```
+2.  Install packages:
+    ```bash
+    npm install
+    ```
+3.  Create a `.env` file in the root of the `Backend/` folder:
+    ```env
+    PORT=5000
+    MONGO_URI=mongodb://localhost:27017/interviewiq
+    JWT_SECRET=your_jwt_secret_token_here
+    GEMINI_API_KEY=your_gemini_api_key_here
+    ```
+4.  Start development server:
+    ```bash
+    npm run dev
+    ```
 
-### 2. Frontend Configuration
-1. Navigate to the `Frontend` directory:
-   ```bash
-   cd ../Frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file in the root of `Frontend` and add:
-   ```env
-   VITE_API_URL=http://localhost:5000/api
-   ```
-4. Start the frontend developer server:
-   ```bash
-   npm run dev
-   ```
-5. Open your browser and navigate to `http://localhost:5173`.
+### Step 2: Run the Frontend App
+1.  Navigate to the `Frontend` directory:
+    ```bash
+    cd ../Frontend
+    ```
+2.  Install packages:
+    ```bash
+    npm install
+    ```
+3.  Create a `.env` file in the root of the `Frontend/` folder:
+    ```env
+    VITE_API_URL=http://localhost:5000/api
+    ```
+4.  Start development server:
+    ```bash
+    npm run dev
+    ```
+5.  Open your browser and navigate to `http://localhost:5173`.
