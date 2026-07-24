@@ -15,6 +15,14 @@ app.use(cors({
 const authRouter = require("./routes/auth.routes")
 const interviewRouter = require("./routes/interview.routes")
 
+app.get("/", (req, res) => {
+    res.json({
+        status: "healthy",
+        service: "InterviewIQ API Server",
+        message: "API routes are operational at /api/auth and /api/interview"
+    });
+});
+
 app.use("/api/auth", authRouter)
 app.use("/api/interview",interviewRouter)
 
