@@ -35,7 +35,8 @@ const updateProfileSchema = z.object({
 // Interview & Practice Payloads
 const generateReportSchema = z.object({
     body: z.object({
-        jobDescription: z.string().min(10, "Job description must be at least 10 characters").max(10000)
+        jobdescription: z.string().min(10, "Job description must be at least 10 characters").max(10000),
+        selfdescription: z.string().max(10000).optional().or(z.literal(""))
     }).strict()
 });
 

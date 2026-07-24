@@ -1,0 +1,56 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 500 >>
+stream
+BT
+/F1 12 Tf
+72 712 Td
+(John Doe) Tj
+0 -18 Td
+(Full Stack Software Engineer) Tj
+0 -18 Td
+(Email: john.doe@interviewiq.ai | Phone: +1-555-0199) Tj
+0 -36 Td
+(Summary:) Tj
+0 -18 Td
+(Highly skilled Software Engineer with 3+ years of experience building modern web applications.) Tj
+0 -18 Td
+(Proficient in JavaScript, React, Node.js, Express, and MongoDB.) Tj
+0 -36 Td
+(Experience:) Tj
+0 -18 Td
+(Software Engineer | Tech Solutions Inc. | 2022 - Present) Tj
+0 -18 Td
+(- Engineered responsive React frontends, improving user engagement by 25%.) Tj
+0 -18 Td
+(- Designed secure REST APIs with Node.js and Express, supporting 10k+ daily users.) Tj
+0 -18 Td
+(- Optimized MongoDB database queries, reducing API response times by 40%.) Tj
+0 -36 Td
+(Skills:) Tj
+0 -18 Td
+(JavaScript, React, Node.js, Express, MongoDB, Git, HTML, CSS, Tailwind CSS) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000222 00000 n 
+trailer
+<< /Size 5 /Root 1 0 R >>
+startxref
+942
+%%EOF
