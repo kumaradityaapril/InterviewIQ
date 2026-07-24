@@ -82,16 +82,11 @@ const Register = () => {
                 <nav className="flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto">
                     <div className="flex items-center gap-8">
                         <span className="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">InterviewIQ</span>
-                        <div className="hidden md:flex items-center gap-6">
-                            <Link className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" to="/">Dashboard</Link>
-                            <Link className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" to="/login">Reports</Link>
-                            <Link className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" to="/login">Practice</Link>
-                        </div>
                     </div>
                 </nav>
             </header>
 
-            <main className="flex-grow flex items-center overflow-hidden hero-gradient">
+            <main className="flex-grow overflow-y-auto">
                 <div className="relative z-10 w-full max-w-7xl mx-auto px-container-margin grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12">
                     {/* Headline Content */}
                     <div className="lg:col-span-7">
@@ -207,6 +202,40 @@ const Register = () => {
                                 <div id="googleSignInDiv" className="w-full flex justify-center"></div>
                             </div>
                         </Tilt3D>
+                    </div>
+                </div>
+
+                {/* The 3-Step Preparation Loop Section */}
+                <div className="border-t border-border-subtle bg-surface-container-lowest/50 py-16 relative">
+                    <div className="max-w-7xl mx-auto px-container-margin space-y-12">
+                        <div className="text-center max-w-2xl mx-auto space-y-4">
+                            <h2 className="font-headline-lg text-3xl font-extrabold text-on-surface">The 3-Step Preparation Loop</h2>
+                            <p className="text-body-md text-text-muted">No fluff. No generic advice. Just targeted, performance-driven feedback designed to get you hired.</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="glass-panel p-8 rounded-xl border border-border-subtle hover:border-primary/45 transition-all space-y-4">
+                                <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center font-headline-md text-primary font-bold text-xl">01</div>
+                                <h3 className="font-body-lg text-on-surface font-bold">Submit Target Profile</h3>
+                                <p className="text-xs text-text-muted leading-relaxed">
+                                    Upload your PDF resume and paste the description of the exact position you are targeting.
+                                </p>
+                            </div>
+                            <div className="glass-panel p-8 rounded-xl border border-border-subtle hover:border-primary/45 transition-all space-y-4">
+                                <div className="w-12 h-12 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center font-headline-md text-secondary font-bold text-xl">02</div>
+                                <h3 className="font-body-lg text-on-surface font-bold">Simulate Speech Rounds</h3>
+                                <p className="text-xs text-text-muted leading-relaxed">
+                                    Answer live, tailored behavioral and technical questions in our conversational speech simulator.
+                                </p>
+                            </div>
+                            <div className="glass-panel p-8 rounded-xl border border-border-subtle hover:border-primary/45 transition-all space-y-4">
+                                <div className="w-12 h-12 rounded-lg bg-primary-fixed-dim/10 border border-primary-fixed-dim/20 flex items-center justify-center font-headline-md text-primary-fixed-dim font-bold text-xl">03</div>
+                                <h3 className="font-body-lg text-on-surface font-bold">Restructure Resume</h3>
+                                <p className="text-xs text-text-muted leading-relaxed">
+                                    Apply localized keywords and structured bullets to export a clean Serif LaTeX resume page.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
