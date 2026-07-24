@@ -4,12 +4,14 @@ const jwt = require("jsonwebtoken")
 const tokenBlackListModel = require("../models/blacklist.model")
 const interviewReportModel = require("../models/interviewReport.model")
 const practiceSessionModel = require("../models/practiceSession.model")
+const { recordAuthFailure, recordAuthSuccess } = require("../middlewares/rateLimiter.middleware")
 
 async function registerUserController(req,res){
     try {
         const {username,email,password} = req.body
 
         if(!username || !email || !password) {
+            await recordAuthFailure(req.ip, email);
             return res.status(400).json({
                 message: "Please provide username, email and password"
             })
@@ -20,6 +22,7 @@ async function registerUserController(req,res){
         })
 
         if(isUserAlreadyExists) { 
+            await recordAuthFailure(req.ip, email);
             return res.status(400).json({
                 message: "Account already exists with this email address or username"
             })
@@ -41,6 +44,8 @@ async function registerUserController(req,res){
 
         res.cookie("token",token)
 
+        await recordAuthSuccess(req.ip, email);
+
         res.status(201).json({
             message:"User Registered successfully",
             user: {
@@ -50,6 +55,7 @@ async function registerUserController(req,res){
             },
         })
     } catch (error) {
+        await recordAuthFailure(req.ip, req.body.email);
         console.error("Register user error:", error)
         res.status(500).json({
             message: "Internal server error",
@@ -63,6 +69,7 @@ async function loginUserController(req,res) {
         const {email,password} = req.body
 
         if(!email || !password) {
+            await recordAuthFailure(req.ip, email);
             return res.status(400).json({
                 message: "Please provide email and password"
             })
@@ -71,6 +78,7 @@ async function loginUserController(req,res) {
         const user = await userModel.findOne({ email })
 
         if(!user) {
+            await recordAuthFailure(req.ip, email);
             return res.status(400).json({
                 message: "Invalid email or password"
             })
@@ -79,6 +87,7 @@ async function loginUserController(req,res) {
         const isPasswordValid = await bcrypt.compare(password,user.password)
 
         if(!isPasswordValid) {
+            await recordAuthFailure(req.ip, email);
             return res.status(400).json({
                 message: "Invalid email or password"
             })
@@ -91,6 +100,8 @@ async function loginUserController(req,res) {
         )
 
         res.cookie("token",token)
+        await recordAuthSuccess(req.ip, email);
+
         res.status(200).json({
             message:"User loggedIn successfully.",
             user:{
@@ -100,6 +111,7 @@ async function loginUserController(req,res) {
             }
         }) 
     } catch (error) {
+        await recordAuthFailure(req.ip, req.body.email);
         console.error("Login user error:", error)
         res.status(500).json({
             message: "Internal server error",
@@ -140,11 +152,13 @@ async function googleAuthController(req, res) {
     try {
         const { token } = req.body;
         if (!token) {
+            await recordAuthFailure(req.ip, req.body.email);
             return res.status(400).json({ message: "Google credential token is required." });
         }
 
         const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
         if (!response.ok) {
+            await recordAuthFailure(req.ip, req.body.email);
             return res.status(400).json({ message: "Invalid Google credential token." });
         }
 
@@ -152,12 +166,14 @@ async function googleAuthController(req, res) {
         const { sub, email, name, email_verified } = payload;
 
         if (!email_verified) {
+            await recordAuthFailure(req.ip, email);
             return res.status(400).json({ message: "Google email is not verified." });
         }
 
         const client_id = process.env.GOOGLE_CLIENT_ID;
         if (client_id && payload.aud !== client_id) {
             console.warn(`Token client ID mismatch. Expected: ${client_id}, Found: ${payload.aud}`);
+            await recordAuthFailure(req.ip, email);
             return res.status(400).json({ message: "Unauthorized: Client ID mismatch." });
         }
 
@@ -198,6 +214,8 @@ async function googleAuthController(req, res) {
         );
 
         res.cookie("token", jwtToken);
+        await recordAuthSuccess(req.ip, user.email);
+
         res.status(200).json({
             message: "User logged in successfully via Google",
             user: {
@@ -207,6 +225,7 @@ async function googleAuthController(req, res) {
             }
         });
     } catch (error) {
+        await recordAuthFailure(req.ip, req.body.email);
         console.error("Google Authentication error:", error);
         res.status(500).json({
             message: "Failed to authenticate via Google",

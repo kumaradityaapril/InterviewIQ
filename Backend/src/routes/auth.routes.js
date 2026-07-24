@@ -1,12 +1,15 @@
 const express = require("express")
 const authController = require("../controllers/auth.controller")
 const authMiddleware = require("../middlewares/auth.middleware")
+const { publicRateLimiter, authLockoutCheck } = require("../middlewares/rateLimiter.middleware")
 
 const authRouter = express.Router()
 
-authRouter.post("/register", authController.registerUserController)
-authRouter.post("/login", authController.loginUserController)
-authRouter.post("/google", authController.googleAuthController)
+authRouter.use(publicRateLimiter)
+
+authRouter.post("/register", authLockoutCheck, authController.registerUserController)
+authRouter.post("/login", authLockoutCheck, authController.loginUserController)
+authRouter.post("/google", authLockoutCheck, authController.googleAuthController)
 
 authRouter.get("/logout",authController.logoutUserController)
 
