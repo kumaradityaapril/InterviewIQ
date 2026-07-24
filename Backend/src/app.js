@@ -39,7 +39,8 @@ app.get("/", (req, res) => {
     res.json({
         status: "healthy",
         service: "InterviewIQ API Server",
-        message: "API routes are operational at /api/auth and /api/interview"
+        message: "API routes are operational at /api/auth and /api/interview - v3",
+        buildTime: "July 24, 2026 - custom CORS"
     });
 });
 
