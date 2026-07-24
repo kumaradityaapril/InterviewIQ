@@ -38,9 +38,8 @@ async function generateInterviewReportController(req,res){
         })
     } catch (error) {
         console.error("Error in generateInterviewReportController:", error)
-        const statusCode = error.statusCode || 500
-        res.status(statusCode).json({
-            message: error.message || "Failed to generate interview report"
+        res.status(500).json({
+            message: "Failed to generate interview report due to a server error."
         })
     }
 }
@@ -54,7 +53,7 @@ async function getUserReportsController(req,res){
     } catch (error) {
         console.error("Error in getUserReportsController:", error)
         res.status(500).json({
-            message: error.message || "Failed to fetch user reports"
+            message: "Failed to fetch user reports due to a server error."
         })
     }
 }
@@ -69,7 +68,7 @@ async function getReportByIdController(req,res){
     } catch (error) {
         console.error("Error in getReportByIdController:", error)
         res.status(500).json({
-            message: error.message || "Failed to fetch report details"
+            message: "Failed to fetch report details due to a server error."
         })
     }
 }
@@ -105,7 +104,7 @@ async function startPracticeSessionController(req, res) {
         });
     } catch (error) {
         console.error("Error in startPracticeSessionController:", error);
-        res.status(500).json({ message: error.message || "Failed to start practice session" });
+        res.status(500).json({ message: "Failed to start practice session due to a server error." });
     }
 }
 
@@ -142,7 +141,7 @@ async function respondPracticeQuestionController(req, res) {
         res.status(200).json(evaluationData);
     } catch (error) {
         console.error("Error in respondPracticeQuestionController:", error);
-        res.status(500).json({ message: error.message || "Failed to evaluate response" });
+        res.status(500).json({ message: "Failed to evaluate response due to a server error." });
     }
 }
 
@@ -173,7 +172,7 @@ async function savePracticeSessionController(req, res) {
         res.status(201).json({ message: "Practice session saved successfully", session: newSession });
     } catch (error) {
         console.error("Error in savePracticeSessionController:", error);
-        res.status(500).json({ message: error.message || "Failed to save practice session" });
+        res.status(500).json({ message: "Failed to save practice session due to a server error." });
     }
 }
 
@@ -185,7 +184,7 @@ async function getPracticeSessionsController(req, res) {
         res.status(200).json({ sessions });
     } catch (error) {
         console.error("Error in getPracticeSessionsController:", error);
-        res.status(500).json({ message: error.message || "Failed to fetch practice sessions" });
+        res.status(500).json({ message: "Failed to fetch practice sessions due to a server error." });
     }
 }
 
@@ -207,9 +206,8 @@ async function tailorResumeController(req, res) {
         });
     } catch (error) {
         console.error("Error in tailorResumeController:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            message: error.message || "Failed to tailor resume"
+        res.status(500).json({
+            message: "Failed to tailor resume due to a server error."
         });
     }
 }
@@ -223,9 +221,8 @@ async function tailorCustomResumeController(req, res) {
         });
     } catch (error) {
         console.error("Error in tailorCustomResumeController:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            message: error.message || "Failed to tailor custom resume"
+        res.status(500).json({
+            message: "Failed to tailor custom resume due to a server error."
         });
     }
 }
@@ -248,9 +245,8 @@ async function parseResumeToFormController(req, res) {
         });
     } catch (error) {
         console.error("Error in parseResumeToFormController:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            message: error.message || "Failed to parse resume context to form"
+        res.status(500).json({
+            message: "Failed to parse resume context to form due to a server error."
         });
     }
 }

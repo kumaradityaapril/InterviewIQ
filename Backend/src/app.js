@@ -19,4 +19,11 @@ const interviewRouter = require("./routes/interview.routes")
 app.use("/api/auth", authRouter)
 app.use("/api/interview",interviewRouter)
 
+app.use((err, req, res, next) => {
+    console.error("Global Catch - Unhandled Exception:", err);
+    res.status(err.statusCode || 500).json({
+        message: "An unexpected error occurred on the server. Please try again later."
+    });
+});
+
 module.exports = app

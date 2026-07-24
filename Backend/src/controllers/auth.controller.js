@@ -58,8 +58,7 @@ async function registerUserController(req,res){
         await recordAuthFailure(req.ip, req.body.email);
         console.error("Register user error:", error)
         res.status(500).json({
-            message: "Internal server error",
-            error: error.message
+            message: "Registration failed due to a server error. Please try again later."
         })
     }
 }
@@ -114,8 +113,7 @@ async function loginUserController(req,res) {
         await recordAuthFailure(req.ip, req.body.email);
         console.error("Login user error:", error)
         res.status(500).json({
-            message: "Internal server error",
-            error: error.message
+            message: "Login failed due to a server error. Please try again later."
         })
     }
 }
@@ -228,8 +226,7 @@ async function googleAuthController(req, res) {
         await recordAuthFailure(req.ip, req.body.email);
         console.error("Google Authentication error:", error);
         res.status(500).json({
-            message: "Failed to authenticate via Google",
-            error: error.message
+            message: "Failed to authenticate via Google due to a server error."
         });
     }
 }
