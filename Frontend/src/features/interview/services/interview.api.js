@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/interview";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const API_URL = `${API_BASE}/interview`;
 
 export async function generateReport(formData) {
     try {

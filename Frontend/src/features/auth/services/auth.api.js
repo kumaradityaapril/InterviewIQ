@@ -1,61 +1,59 @@
-import axios from "axios"
+import axios from "axios";
 
-export async function register({username,email,password}){
-try{
-    const response = await axios.post('http://localhost:3000/api/auth/register',{
-        username,email,password
-    },{
-        withCredentials: true
-    })
-     return response.data
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const AUTH_URL = `${API_BASE}/auth`;
 
-} catch (err) {
-    console.log(err)
-}
-
-}
-
-
-export async function login({email,password}){
-    try{
-         const response = await axios.post("http://localhost:3000/api/auth/login",{
-            email,password
-         },{
+export async function register({ username, email, password }) {
+    try {
+        const response = await axios.post(`${AUTH_URL}/register`, {
+            username, email, password
+        }, {
             withCredentials: true
-         })
-         return response.data
-    }catch(err){
-        console.log(err)
+        });
+        return response.data;
+    } catch (err) {
+        console.log(err);
     }
 }
 
-
-export async function logout(){
-    try{
-         const response = await axios.get("http://localhost:3000/api/auth/logout",{
+export async function login({ email, password }) {
+    try {
+        const response = await axios.post(`${AUTH_URL}/login`, {
+            email, password
+        }, {
             withCredentials: true
-         })
-         return response.data
-    } catch (err){
-        console.log(err)
+        });
+        return response.data;
+    } catch (err) {
+        console.log(err);
     }
 }
 
-
-export async function getMe(){
-    try{
-        const response = await axios.get("http://localhost:3000/api/auth/get-me",{
+export async function logout() {
+    try {
+        const response = await axios.get(`${AUTH_URL}/logout`, {
             withCredentials: true
-        })
-        return response.data
-    } catch (err){
-        console.log(err)
+        });
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+export async function getMe() {
+    try {
+        const response = await axios.get(`${AUTH_URL}/get-me`, {
+            withCredentials: true
+        });
+        return response.data;
+    } catch (err) {
+        console.log(err);
     }
 }
 
 export async function googleLogin(token) {
     try {
-        const response = await axios.post("http://localhost:3000/api/auth/google", { token }, {
+        const response = await axios.post(`${AUTH_URL}/google`, { token }, {
             withCredentials: true
         });
         return response.data;
@@ -67,7 +65,7 @@ export async function googleLogin(token) {
 
 export async function getUserProfile() {
     try {
-        const response = await axios.get("http://localhost:3000/api/auth/profile", {
+        const response = await axios.get(`${AUTH_URL}/profile`, {
             withCredentials: true
         });
         return response.data;
@@ -79,7 +77,7 @@ export async function getUserProfile() {
 
 export async function updateUserProfile(data) {
     try {
-        const response = await axios.put("http://localhost:3000/api/auth/profile", data, {
+        const response = await axios.put(`${AUTH_URL}/profile`, data, {
             withCredentials: true
         });
         return response.data;

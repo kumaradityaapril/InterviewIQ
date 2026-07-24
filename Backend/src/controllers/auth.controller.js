@@ -42,7 +42,12 @@ async function registerUserController(req,res){
             {expiresIn: "1d"}
         )
 
-        res.cookie("token",token)
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 24 * 60 * 60 * 1000
+        })
 
         await recordAuthSuccess(req.ip, email);
 
@@ -98,7 +103,12 @@ async function loginUserController(req,res) {
             {expiresIn: "1d"}
         )
 
-        res.cookie("token",token)
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 24 * 60 * 60 * 1000
+        })
         await recordAuthSuccess(req.ip, email);
 
         res.status(200).json({
@@ -125,7 +135,11 @@ async function logoutUserController(req,res) {
         await tokenBlackListModel.create({token})
     } 
 
-    res.clearCookie("token")
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    })
 
     res.status(200).json({
         message:"User Logged out successfully"
@@ -211,7 +225,12 @@ async function googleAuthController(req, res) {
             { expiresIn: "1d" }
         );
 
-        res.cookie("token", jwtToken);
+        res.cookie("token", jwtToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 24 * 60 * 60 * 1000
+        });
         await recordAuthSuccess(req.ip, user.email);
 
         res.status(200).json({
