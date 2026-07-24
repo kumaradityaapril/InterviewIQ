@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router'
 import { startPracticeSession, respondPracticeQuestion, savePracticeSession } from '../services/interview.api'
 import { useAuth } from '../../auth/hooks/useAuth'
@@ -39,8 +39,26 @@ const Practice = () => {
     const [starScore, setStarScore] = useState({ s: 0, t: 0, a: 0, r: 0 })
     const [detectedKeywords, setDetectedKeywords] = useState([])
     const [liveMatchScore, setLiveMatchScore] = useState(50)
+    const [targetKeywords, setTargetKeywords] = useState(["stakeholders", "alignment", "data-driven", "scalability", "agile", "consistency", "latency", "testing"])
 
-    const targetKeywords = ["stakeholders", "alignment", "data-driven", "scalability", "agile", "consistency", "latency", "testing"]
+    const responseStartTimeRef = useRef(null)
+
+    // Dynamic target keywords generation based on current question topic
+    useEffect(() => {
+        if (questions && questions[currentQuestionIndex]) {
+            const currentQ = questions[currentQuestionIndex];
+            const qLower = currentQ.toLowerCase();
+            let keywords = [];
+            if (qLower.includes("system") || qLower.includes("scale") || qLower.includes("design") || qLower.includes("architecture") || qLower.includes("database") || qLower.includes("cache") || qLower.includes("load") || qLower.includes("latency") || qLower.includes("shard")) {
+                keywords = ["scalability", "latency", "database", "caching", "throughput", "redundancy", "consistency", "load-balancer"];
+            } else if (qLower.includes("team") || qLower.includes("conflict") || qLower.includes("disagree") || qLower.includes("leader") || qLower.includes("priorit") || qLower.includes("project")) {
+                keywords = ["alignment", "stakeholders", "collaboration", "conflict", "priority", "agile", "communication", "delivery"];
+            } else {
+                keywords = ["problem-solving", "testing", "optimization", "collaboration", "scalability", "refactoring", "security", "monitoring"];
+            }
+            setTargetKeywords(keywords);
+        }
+    }, [questions, currentQuestionIndex]);
 
     // Initialize Web Speech Recognition
     useEffect(() => {
@@ -192,40 +210,82 @@ const Practice = () => {
 
     // Real-time text analysis logic
     useEffect(() => {
-        if (!userResponse) {
+        if (!userResponse.trim()) {
             setWordsPerMin(0)
             setStarScore({ s: 0, t: 0, a: 0, r: 0 })
             setDetectedKeywords([])
             setLiveMatchScore(50)
+            responseStartTimeRef.current = null
             return
+        }
+
+        // Initialize start time on first character/word
+        if (!responseStartTimeRef.current) {
+            responseStartTimeRef.current = Date.now()
         }
 
         const words = userResponse.trim().split(/\s+/)
         const wordCount = words.length
         
-        // Simulating words per minute based on character typing frequency
-        const calculatedWpm = Math.min(160, Math.max(90, 110 + (wordCount % 45)))
+        // Dynamic pacing calculation based on actual elapsed time
+        const elapsedTimeMs = Date.now() - responseStartTimeRef.current
+        const elapsedSeconds = elapsedTimeMs / 1000
+        
+        let calculatedWpm = 0
+        if (elapsedSeconds > 1.5) {
+            calculatedWpm = Math.round((wordCount / elapsedSeconds) * 60)
+            // Constrain between reasonable metrics for visual stability
+            calculatedWpm = Math.min(220, Math.max(40, calculatedWpm))
+        } else {
+            calculatedWpm = 135 // optimal default starting point
+        }
         setWordsPerMin(calculatedWpm)
 
-        // STAR detection simulator based on text length milestones
-        let s = Math.min(100, Math.floor((wordCount / 10) * 100))
-        let t = wordCount > 15 ? Math.min(100, Math.floor(((wordCount - 15) / 15) * 100)) : 0
-        let a = wordCount > 35 ? Math.min(100, Math.floor(((wordCount - 35) / 25) * 100)) : 0
-        let r = wordCount > 65 ? Math.min(100, Math.floor(((wordCount - 65) / 20) * 100)) : 0
-        setStarScore({ s, t, a, r })
-
-        // Keyword checking
+        // STAR detection based on semantic content cues
         const lowerResponse = userResponse.toLowerCase()
+
+        // S: Situation (past context, team context, problems)
+        const situationKeywords = ["when", "at my", "previous", "company", "client", "team", "situation", "problem", "issue", "challenge", "project", "background", "context", "before"]
+        const sMatches = situationKeywords.filter(k => lowerResponse.includes(k)).length
+        const sScore = Math.min(100, Math.round((sMatches / 3) * 100))
+
+        // T: Task (responsibility, goals, expectations)
+        const taskKeywords = ["responsible", "task", "my goal", "need to", "had to", "required", "expected", "duty", "objective", "assignment", "deliverable"]
+        const tMatches = taskKeywords.filter(k => lowerResponse.includes(k)).length
+        const tScore = Math.min(100, Math.round((tMatches / 2) * 100))
+
+        // A: Action (concrete engineering work done, implementation details)
+        const actionKeywords = ["designed", "implemented", "created", "built", "refactored", "led", "developed", "resolved", "collaborated", "wrote", "optimized", "fixed", "deployed", "code", "system"]
+        const aMatches = actionKeywords.filter(k => lowerResponse.includes(k)).length
+        const aScore = Math.min(100, Math.round((aMatches / 4) * 100))
+
+        // R: Result (outcomes, success, numbers, percentages, metrics)
+        const resultKeywords = ["result", "outcome", "reduced", "increased", "improved", "metrics", "percent", "saved", "successfully", "achieved", "consequently", "impact", "%", "seconds", "ms"]
+        const rMatches = resultKeywords.filter(k => lowerResponse.includes(k)).length
+        const rScore = Math.min(100, Math.round((rMatches / 2) * 100))
+
+        setStarScore({ s: sScore, t: tScore, a: aScore, r: rScore })
+
+        // Dynamic Keyword checking
         const foundKeywords = targetKeywords.filter(k => lowerResponse.includes(k))
         setDetectedKeywords(foundKeywords)
 
-        // Live score calculations
-        const keywordBonus = foundKeywords.length * 5
-        const lengthBonus = Math.min(30, Math.floor(wordCount / 4))
-        const finalScore = Math.min(98, 50 + keywordBonus + lengthBonus)
+        // Live match score calculation based on STAR structure, WPM pacing appropriateness, and keywords matching
+        // Pacing score: WPM between 110-170 gets optimal points
+        const pacingDiff = Math.abs(calculatedWpm - 140)
+        const pacingScore = Math.max(0, 30 - pacingDiff * 0.4)
+
+        const starAvg = (sScore + tScore + aScore + rScore) / 4
+        const starComponent = (starAvg / 100) * 35
+
+        const keywordComponent = targetKeywords.length > 0
+            ? (foundKeywords.length / targetKeywords.length) * 35
+            : 0
+
+        const finalScore = Math.min(100, Math.round(30 + pacingScore + starComponent + keywordComponent))
         setLiveMatchScore(finalScore)
 
-    }, [userResponse])
+    }, [userResponse, targetKeywords])
 
     const handleNextQuestion = async () => {
         if (!userResponse.trim() || isThinking) return;
@@ -916,17 +976,6 @@ const Practice = () => {
                 </main>
             )}
 
-            {/* Footer */}
-            <footer className="bg-surface-container-lowest border-t border-border-subtle mt-12 py-8">
-                <div className="max-w-7xl mx-auto px-container-margin flex flex-col md:flex-row justify-between items-center gap-4">
-                    <span className="font-label-caps text-label-caps text-on-surface-variant font-bold">INTERVIEWIQ // TECH_EXCELLENCE</span>
-                    <div className="flex gap-6">
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Terms</Link>
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Privacy</Link>
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Support</Link>
-                    </div>
-                </div>
-            </footer>
         </div>
     )
 }

@@ -171,7 +171,7 @@ const ResumeBuilder = () => {
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary animate-pulse"></div>
                     <span className="material-symbols-outlined text-primary text-5xl animate-spin">sync</span>
                     <h2 className="font-headline-md text-headline-md text-on-surface font-bold">TAILORING RESUME...</h2>
-                    <p className="font-label-technical text-label-technical text-primary uppercase tracking-widest font-bold">AGENT_v4.2 // RESTRUCTURING_EXPERIENCE</p>
+                    <p className="font-label-technical text-label-technical text-primary uppercase tracking-widest font-bold">GEMINI AI // RESTRUCTURING EXPERIENCE</p>
                     <p className="font-body-md text-text-muted">
                         AI agent is matching your credentials, inserting industry action keywords, and aligning bullet points to optimize against target Job Description...
                     </p>
@@ -184,15 +184,15 @@ const ResumeBuilder = () => {
         return (
             <div className="min-h-screen bg-background flex flex-col items-center justify-center text-on-surface p-6 relative overflow-hidden">
                 <Tech3DBackground />
-                <div className="glass-panel p-8 rounded-xl max-w-md text-center z-10">
-                    <span className="material-symbols-outlined text-status-error text-6xl mb-4">error</span>
-                    <h2 className="font-headline-lg text-2xl mb-2 text-on-surface">Error Generating Resume</h2>
-                    <p className="font-body-md text-text-muted mb-6">{errorMsg}</p>
-                    <button
-                        onClick={() => navigate("/")}
-                        className="bg-primary text-on-primary px-6 py-2.5 rounded font-bold hover:bg-primary/90 transition-all cursor-pointer font-bold"
+                <div className="flex flex-col items-center gap-4 max-w-md text-center p-8 glass-panel rounded-xl shadow-2xl relative overflow-hidden z-10 border border-error-container/20">
+                    <span className="material-symbols-outlined text-status-error text-5xl">error</span>
+                    <h2 className="font-headline-md text-headline-md text-on-surface font-bold">TAILORING FAILED</h2>
+                    <p className="font-body-md text-text-muted">{errorMsg}</p>
+                    <button 
+                        onClick={() => navigate(-1)}
+                        className="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity mt-2 cursor-pointer"
                     >
-                        Back to Dashboard
+                        Go Back
                     </button>
                 </div>
             </div>
@@ -200,37 +200,17 @@ const ResumeBuilder = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary/30 flex flex-col justify-between relative overflow-hidden">
-            <Tech3DBackground />
-
-            {/* Print Specific CSS Overrides */}
+        <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary/30 flex flex-col justify-between relative overflow-hidden print:bg-white print:text-black">
             <style>{`
                 @media print {
-                    body * {
-                        visibility: hidden;
-                        background: none !important;
+                    header, .print\\:hidden, button, .editor-controls, footer {
+                        display: none !important;
                     }
-                    #print-resume-area, #print-resume-area * {
-                        visibility: visible;
-                    }
-                    #print-resume-area {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 210mm;
-                        height: 297mm;
-                        padding: 15mm !important;
+                    body, .min-h-screen, main {
+                        background: white !important;
+                        color: black !important;
+                        padding: 0 !important;
                         margin: 0 !important;
-                        border: none !important;
-                        box-shadow: none !important;
-                        background: #ffffff !important;
-                        color: #000000 !important;
-                        overflow: hidden !important;
-                        box-sizing: border-box;
-                    }
-                    @page {
-                        size: A4 portrait;
-                        margin: 0;
                     }
                 }
             `}</style>
@@ -240,7 +220,7 @@ const ResumeBuilder = () => {
                 <div className="flex justify-between items-center px-container-margin h-16 w-full max-w-7xl mx-auto">
                     <div className="flex items-center gap-8">
                         <span className="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">InterviewIQ</span>
-                        <span className="font-label-technical text-label-technical text-text-muted">RESUME AGENT v4.2</span>
+                        <span className="font-label-technical text-label-technical text-text-muted">GEMINI AI RESUME BUILDER</span>
                     </div>
                     <button 
                         onClick={() => navigate(-1)}
@@ -637,12 +617,6 @@ const ResumeBuilder = () => {
                 </div>
             </main>
 
-            {/* Footer */}
-            <footer className="bg-surface-container-lowest border-t border-border-subtle py-6 print:hidden z-10">
-                <div className="max-w-7xl mx-auto px-container-margin text-center">
-                    <p className="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. LaTeX Template.</p>
-                </div>
-            </footer>
         </div>
     );
 };

@@ -821,12 +821,6 @@ const ResumeFormPage = () => {
                 </form>
             </main>
 
-            {/* Footer */}
-            <footer className="bg-surface-container-lowest border-t border-border-subtle py-6">
-                <div className="max-w-7xl mx-auto px-container-margin text-center">
-                    <p className="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. Dynamic LaTeX Compilation.</p>
-                </div>
-            </footer>
         </div>
     );
 };

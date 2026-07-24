@@ -372,20 +372,6 @@ const Report = () => {
                 </section>
             </main>
 
-            {/* Footer */}
-            <footer className="bg-surface-container-lowest border-t border-border-subtle">
-                <div className="max-w-7xl mx-auto px-container-margin flex flex-col md:flex-row justify-between items-center py-8 gap-4">
-                    <div className="flex flex-col items-center md:items-start gap-1">
-                        <span className="font-label-caps text-label-caps text-on-surface-variant font-bold">INTERVIEWIQ</span>
-                        <span className="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. Technical Excellence.</span>
-                    </div>
-                    <div className="flex gap-6">
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Terms</Link>
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Privacy</Link>
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Support</Link>
-                    </div>
-                </div>
-            </footer>
         </div>
     )
 }

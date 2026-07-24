@@ -101,11 +101,6 @@ const Login = () => {
                         </div>
                     </div>
                 </main>
-                <footer className="border-t border-border-subtle py-8">
-                    <div className="max-w-7xl mx-auto px-container-margin text-center">
-                        <p className="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. Technical Excellence.</p>
-                    </div>
-                </footer>
             </div>
         )
     }
@@ -133,7 +128,7 @@ const Login = () => {
                     <div className="lg:col-span-7">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-high border border-border-subtle rounded-full mb-6">
                             <span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
-                            <span className="font-label-technical text-label-technical text-primary uppercase tracking-widest">New: AI Engine v4.2</span>
+                            <span className="font-label-technical text-label-technical text-primary uppercase tracking-widest">AI-POWERED PREPARATION</span>
                         </div>
                         <h1 className="font-display-hero text-5xl lg:text-6xl text-on-surface mb-6 max-w-2xl leading-tight font-extrabold">
                             Master the Technical Interview with <span className="text-primary">AI Precision</span>.
@@ -141,18 +136,35 @@ const Login = () => {
                         <p className="font-body-lg text-body-lg text-text-muted mb-8 max-w-xl">
                             An elite-tier diagnostic platform designed for high-stakes technical candidates. Analyze resumes, simulate realistic system design mocks, and identify critical knowledge gaps before you step into the room.
                         </p>
-                        <div className="grid grid-cols-3 gap-8 max-w-lg">
-                            <div>
-                                <div className="font-headline-md text-2xl font-bold text-on-surface">98.2%</div>
-                                <div className="font-label-technical text-label-technical text-text-muted">Prediction Accuracy</div>
+                        
+                        {/* Expanded Site Features List */}
+                        <div className="space-y-4 max-w-xl">
+                            <div className="flex gap-4 items-start bg-surface-container-low/40 p-4 rounded-xl border border-border-subtle/50">
+                                <span className="material-symbols-outlined text-primary text-2xl mt-0.5">psychology</span>
+                                <div>
+                                    <h4 className="font-body-md text-on-surface font-bold text-sm">AI Match Diagnostics</h4>
+                                    <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                                        Instantly parse your PDF resume against targeted Job Descriptions. Detect skill gaps and get a tailored preparation timeline.
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <div className="font-headline-md text-2xl font-bold text-on-surface">450+</div>
-                                <div className="font-label-technical text-label-technical text-text-muted">Algorithm Templates</div>
+                            <div className="flex gap-4 items-start bg-surface-container-low/40 p-4 rounded-xl border border-border-subtle/50">
+                                <span className="material-symbols-outlined text-secondary text-2xl mt-0.5">record_voice_over</span>
+                                <div>
+                                    <h4 className="font-body-md text-on-surface font-bold text-sm">Real-time Speech Simulator</h4>
+                                    <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                                        Simulate conversational technical rounds. Speak your responses to receive instant content quality scores and keyword feedback.
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <div className="font-headline-md text-2xl font-bold text-on-surface">12ms</div>
-                                <div className="font-label-technical text-label-technical text-text-muted">Analysis Latency</div>
+                            <div className="flex gap-4 items-start bg-surface-container-low/40 p-4 rounded-xl border border-border-subtle/50">
+                                <span className="material-symbols-outlined text-primary-fixed-dim text-2xl mt-0.5">description</span>
+                                <div>
+                                    <h4 className="font-body-md text-on-surface font-bold text-sm">ATS Serif LaTeX Builder</h4>
+                                    <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                                        Optimize your work history descriptions automatically. Preview and compile a beautiful single-page tailored LaTeX resume.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -181,7 +193,7 @@ const Login = () => {
                                     <div className="space-y-1.5">
                                         <label className="font-label-technical text-label-technical text-text-muted">IDENTIFIER (EMAIL)</label>
                                         <input 
-                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
+                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical text-white" 
                                             placeholder="dev@interviewiq.ai" 
                                             type="email"
                                             value={email}
@@ -192,7 +204,7 @@ const Login = () => {
                                     <div className="space-y-1.5">
                                         <label className="font-label-technical text-label-technical text-text-muted">SECURITY TOKEN (PASSWORD)</label>
                                         <input 
-                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical" 
+                                            className="w-full bg-surface-container border border-border-subtle rounded px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-label-technical text-white" 
                                             placeholder="••••••••" 
                                             type="password"
                                             value={password}
@@ -219,20 +231,6 @@ const Login = () => {
                 </div>
             </main>
 
-            {/* Footer */}
-            <footer className="bg-surface-container-lowest border-t border-border-subtle">
-                <div className="flex flex-col md:flex-row justify-between items-center py-8 px-container-margin w-full max-w-7xl mx-auto gap-4">
-                    <div className="flex flex-col gap-2">
-                        <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">InterviewIQ</span>
-                        <p className="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. Technical Excellence.</p>
-                    </div>
-                    <div className="flex gap-8">
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Terms</Link>
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Privacy</Link>
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Support</Link>
-                    </div>
-                </div>
-            </footer>
         </div>
     )
 }

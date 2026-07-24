@@ -120,7 +120,7 @@ const Home = () => {
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary-fixed-dim to-primary animate-pulse"></div>
                     <span className="material-symbols-outlined text-primary text-6xl animate-spin">sync</span>
                     <h2 className="font-headline-md text-headline-md text-on-surface">ANALYSIS IN PROGRESS</h2>
-                    <p className="font-label-technical text-label-technical text-primary tracking-widest uppercase">ENGINE_v4.2 // RUNNING_DIAGNOSTICS</p>
+                    <p className="font-label-technical text-label-technical text-primary tracking-widest uppercase">GEMINI AI // RUNNING DIAGNOSTICS</p>
                     <p className="font-body-md text-text-muted">
                         Parsing resume PDF, mapping experience gaps, and generating personalized technical & behavioral questionnaires. Please wait...
                     </p>
@@ -184,7 +184,7 @@ const Home = () => {
                 <section className="space-y-6">
                     <div className="flex items-center justify-between border-b border-border-subtle pb-3">
                         <h2 className="font-headline-md text-2xl text-on-surface font-bold">New Readiness Analysis</h2>
-                        <span className="font-label-technical text-label-technical text-primary">ANALYSIS_ENGINE_v4.2</span>
+                        <span className="font-label-technical text-label-technical text-primary">GEMINI AI DIAGNOSTIC</span>
                     </div>
 
                     {errorMsg && (
@@ -499,18 +499,6 @@ const Home = () => {
                 </div>
             )}
 
-            {/* Footer */}
-            <footer className="bg-surface-container-lowest border-t border-border-subtle mt-12">
-                <div className="flex flex-col md:flex-row justify-between items-center py-8 px-container-margin w-full max-w-7xl mx-auto gap-4">
-                    <span className="font-label-caps text-label-caps text-on-surface-variant font-bold">INTERVIEWIQ // TECH_EXCELLENCE</span>
-                    <div className="flex gap-6">
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Terms</Link>
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Privacy</Link>
-                        <Link className="font-label-technical text-label-technical text-text-muted hover:text-primary transition-colors" to="#">Support</Link>
-                    </div>
-                    <p className="font-label-technical text-label-technical text-text-muted">© 2024 InterviewIQ. Technical Excellence.</p>
-                </div>
-            </footer>
         </div>
     )
 }
