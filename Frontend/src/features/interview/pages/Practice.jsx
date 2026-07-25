@@ -45,10 +45,15 @@ const Practice = () => {
     const isListeningRef = useRef(isListening)
     const isRecognitionActiveRef = useRef(false)
     const finalizedResponseRef = useRef("")
+    const isAiSpeakingRef = useRef(isAiSpeaking)
 
     useEffect(() => {
         isListeningRef.current = isListening;
     }, [isListening]);
+
+    useEffect(() => {
+        isAiSpeakingRef.current = isAiSpeaking;
+    }, [isAiSpeaking]);
 
     // Dynamic target keywords generation based on current question topic
     useEffect(() => {
@@ -191,17 +196,28 @@ const Practice = () => {
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
             
+            // Safety timeout: auto-enable listening after 12 seconds in case onend never fires
+            const safetyTimeout = setTimeout(() => {
+                if (isAiSpeakingRef.current) {
+                    console.log("SpeechSynthesis safety timeout fired. Enabling microphone.");
+                    setIsAiSpeaking(false);
+                    setIsListening(true);
+                }
+            }, 12000);
+
             utterance.onstart = () => {
                 setIsAiSpeaking(true);
             };
             
             utterance.onend = () => {
+                clearTimeout(safetyTimeout);
                 setIsAiSpeaking(false);
                 // Automatically start listening after question completes
                 setIsListening(true);
             };
             
             utterance.onerror = (e) => {
+                clearTimeout(safetyTimeout);
                 console.error("Speech Synthesis Error:", e);
                 setIsAiSpeaking(false);
                 // Automatically fall back to listening so user doesn't get stuck
@@ -834,12 +850,21 @@ const Practice = () => {
                                 <div className="flex items-center justify-between gap-4 p-4 border border-border-subtle bg-surface-container/40 rounded-xl">
                                     <div className="flex gap-3">
                                         <button 
-                                            onClick={() => setIsListening(!isListening)}
-                                            disabled={isAiSpeaking || isThinking}
+                                            onClick={() => {
+                                                if (!isListening) {
+                                                    // Unmuting the mic should immediately stop the AI speaking!
+                                                    if ('speechSynthesis' in window) {
+                                                        window.speechSynthesis.cancel();
+                                                    }
+                                                    setIsAiSpeaking(false);
+                                                }
+                                                setIsListening(!isListening);
+                                            }}
+                                            disabled={isThinking}
                                             className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all active:scale-95 cursor-pointer ${
                                                 isListening 
                                                     ? "bg-status-error/20 border-status-error text-status-error animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.3)]" 
-                                                    : (isAiSpeaking || isThinking)
+                                                    : isThinking
                                                         ? "bg-surface-container-high border-border-subtle text-text-muted cursor-not-allowed opacity-50"
                                                         : "bg-surface-container-high border-border-subtle hover:bg-surface-bright text-on-surface"
                                             }`}

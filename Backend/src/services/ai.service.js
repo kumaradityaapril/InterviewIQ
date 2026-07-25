@@ -31,6 +31,21 @@ const firstQuestionSchema = {
     required: ["question"]
 };
 
+const interviewerResponseSchema = {
+    type: "OBJECT",
+    properties: {
+        nextQuestion: {
+            type: "STRING",
+            description: "The next highly relevant follow-up question to ask the candidate, or null/empty if the interview is finished."
+        },
+        isFinished: {
+            type: "BOOLEAN",
+            description: "True if the session has reached 3-4 questions or should conclude based on candidate replies, false otherwise."
+        }
+    },
+    required: ["nextQuestion", "isFinished"]
+};
+
 const evaluationResponseSchema = {
     type: "OBJECT",
     properties: {
@@ -41,22 +56,21 @@ const evaluationResponseSchema = {
         feedback: {
             type: "STRING",
             description: "Detailed, constructive feedback on the response, highlighting strengths and specific areas of improvement."
-        },
+        }
+    },
+    required: ["score", "feedback"]
+};
+
+const keywordResponseSchema = {
+    type: "OBJECT",
+    properties: {
         matchedKeywords: {
             type: "ARRAY",
             items: { type: "STRING" },
             description: "Key technical terms, skills, or professional concepts that the candidate successfully mentioned."
-        },
-        nextQuestion: {
-            type: "STRING",
-            description: "The next highly relevant follow-up question to ask the candidate, or null/empty if the interview is finished."
-        },
-        isFinished: {
-            type: "BOOLEAN",
-            description: "True if the session has reached 3-4 questions or should conclude based on candidate replies, false otherwise."
         }
     },
-    required: ["score", "feedback", "matchedKeywords", "nextQuestion", "isFinished"]
+    required: ["matchedKeywords"]
 };
 
 const interviewReportSchema = {
@@ -331,42 +345,81 @@ async function evaluateResponseAndNextQuestion({
         ? history.map(h => `${h.role === 'interviewer' ? 'Interviewer' : 'Candidate'}: ${h.content}`).join("\n")
         : "";
 
-    const prompt = `You are an expert technical recruiter conducting an interview for this candidate.
-    Job Description: ${jobdescription}
-    Candidate Resume: ${resume}
-    Candidate Self Description: ${selfdescription}
-    
-    Here is the interview history so far:
-    ${historyText}
-    
-    Current Question: ${currentQuestion}
-    Candidate's Response: ${candidateAnswer}
-    
-    Evaluate the response. Grade it on:
-    - Technical correctness & accuracy.
-    - Relevance to the question.
-    - Answering structure (e.g. STAR method).
-    
-    Generate the next follow-up question. If this is the 3rd or 4th question in the interview history, set isFinished to true and nextQuestion to null.
-    `;
-
     const keys = getApiKeys();
     if (keys.length > 0) {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             try {
                 const aiInstance = new GoogleGenAI({ apiKey: key });
-                const response = await aiInstance.models.generateContent({
+
+                // Call Interviewer, Evaluator, and Keyword Analyzer Agents in parallel using Promise.all
+                const interviewerPromise = aiInstance.models.generateContent({
                     model: "gemini-2.5-flash",
-                    contents: prompt,
+                    contents: `You are the Interviewer Agent. Your sole responsibility is to manage the flow of the mock interview and formulate the next question.
+                    Job Description: ${jobdescription}
+                    Candidate Resume: ${resume}
+                    Candidate Self Description: ${selfdescription}
+                    
+                    Here is the interview history so far:
+                    ${historyText}
+                    
+                    Current Question: ${currentQuestion}
+                    Candidate's Answer: ${candidateAnswer}
+                    
+                    Determine if the interview has asked enough questions (e.g. 3-4 questions in history). If so, set isFinished to true and nextQuestion to null.
+                    Otherwise, set isFinished to false and generate the next highly relevant, professional, conversational follow-up question.`,
+                    config: {
+                        responseMimeType: "application/json",
+                        responseSchema: interviewerResponseSchema
+                    }
+                });
+
+                const evaluatorPromise = aiInstance.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: `You are the Scoring & Evaluation Agent. Your sole responsibility is to evaluate and grade the candidate's response.
+                    Job Description: ${jobdescription}
+                    Candidate Resume: ${resume}
+                    
+                    Question Asked: ${currentQuestion}
+                    Candidate's Answer: ${candidateAnswer}
+                    
+                    Score the response out of 100 based on technical correctness, completeness, and structure. Also provide detailed constructive feedback.`,
                     config: {
                         responseMimeType: "application/json",
                         responseSchema: evaluationResponseSchema
                     }
                 });
-                return JSON.parse(response.text);
+
+                const keywordPromise = aiInstance.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: `You are the Keyword Analyzer Agent. Extract a list of key technical terms, methodologies, libraries, or skills mentioned by the candidate in their response.
+                    Candidate Answer: ${candidateAnswer}
+                    Target Job Description: ${jobdescription}`,
+                    config: {
+                        responseMimeType: "application/json",
+                        responseSchema: keywordResponseSchema
+                    }
+                });
+
+                const [interviewerRes, evaluatorRes, keywordRes] = await Promise.all([
+                    interviewerPromise,
+                    evaluatorPromise,
+                    keywordPromise
+                ]);
+
+                const interviewerData = JSON.parse(interviewerRes.text);
+                const evaluatorData = JSON.parse(evaluatorRes.text);
+                const keywordData = JSON.parse(keywordRes.text);
+
+                return {
+                    score: evaluatorData.score,
+                    feedback: evaluatorData.feedback,
+                    matchedKeywords: keywordData.matchedKeywords || [],
+                    nextQuestion: interviewerData.nextQuestion,
+                    isFinished: interviewerData.isFinished
+                };
             } catch (err) {
-                console.error(`Gemini evaluateResponseAndNextQuestion failed on key ${i}:`, err.message || err);
+                console.error(`Gemini Multi-Agent evaluateResponseAndNextQuestion failed on key ${i}:`, err.message || err);
             }
         }
     }
