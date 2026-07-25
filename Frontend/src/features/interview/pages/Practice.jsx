@@ -44,6 +44,7 @@ const Practice = () => {
     const responseStartTimeRef = useRef(null)
     const isListeningRef = useRef(isListening)
     const isRecognitionActiveRef = useRef(false)
+    const finalizedResponseRef = useRef("")
 
     useEffect(() => {
         isListeningRef.current = isListening;
@@ -85,18 +86,23 @@ const Practice = () => {
         };
 
         rec.onresult = (event) => {
+            let interimTranscript = '';
             let finalTranscript = '';
             for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const transcriptSegment = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript + ' ';
+                    finalTranscript += transcriptSegment + ' ';
+                } else {
+                    interimTranscript += transcriptSegment;
                 }
             }
-            if (finalTranscript.trim()) {
-                setUserResponse(prev => {
-                    const separator = prev.trim() ? ' ' : '';
-                    return prev.trim() + separator + finalTranscript.trim();
-                });
+            if (finalTranscript) {
+                finalizedResponseRef.current = (finalizedResponseRef.current.trim() + ' ' + finalTranscript.trim()).trim();
             }
+            
+            // Show finalized text combined with active real-time interim speech transcription!
+            const activeText = (finalizedResponseRef.current + ' ' + interimTranscript).trim();
+            setUserResponse(activeText);
         };
 
         rec.onerror = (e) => {
@@ -396,6 +402,7 @@ const Practice = () => {
                 setScorecard(newScorecard);
                 setCurrentQuestionIndex(prev => prev + 1);
                 setUserResponse("");
+                finalizedResponseRef.current = "";
                 
                 // Speak next question
                 setTimeout(() => {
@@ -641,6 +648,7 @@ const Practice = () => {
                                 setQuestions([]);
                                 setCurrentQuestionIndex(0);
                                 setUserResponse("");
+                                finalizedResponseRef.current = "";
                                 setShowResults(false);
                                 setHasStarted(false);
                                 setIsListening(false);
@@ -814,7 +822,10 @@ const Practice = () => {
                                             className="w-full flex-grow bg-surface-container/50 border border-border-subtle rounded-lg p-6 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-0 transition-all resize-none placeholder:text-outline/40 custom-scrollbar leading-relaxed"
                                             placeholder={isThinking ? "Please wait while the AI evaluates your answer..." : "Start speaking your answer here..."}
                                             value={userResponse}
-                                            onChange={(e) => setUserResponse(e.target.value)}
+                                            onChange={(e) => {
+                                                setUserResponse(e.target.value);
+                                                finalizedResponseRef.current = e.target.value;
+                                            }}
                                         ></textarea>
                                     </div>
                                 </div>
