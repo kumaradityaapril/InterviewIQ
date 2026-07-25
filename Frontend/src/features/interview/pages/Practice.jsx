@@ -85,11 +85,18 @@ const Practice = () => {
         };
 
         rec.onresult = (event) => {
-            let transcript = '';
-            for (let i = 0; i < event.results.length; i++) {
-                transcript += event.results[i][0].transcript + ' ';
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript + ' ';
+                }
             }
-            setUserResponse(transcript);
+            if (finalTranscript.trim()) {
+                setUserResponse(prev => {
+                    const separator = prev.trim() ? ' ' : '';
+                    return prev.trim() + separator + finalTranscript.trim();
+                });
+            }
         };
 
         rec.onerror = (e) => {
@@ -701,13 +708,20 @@ const Practice = () => {
                                     </div>
                                 </div>
                                 
-                                <button 
-                                    onClick={startSession}
-                                    className="bg-primary text-on-primary font-bold px-8 py-3.5 rounded-full hover:scale-105 transition-all shadow-[0_0_15px_rgba(173,198,255,0.25)] flex items-center gap-2 cursor-pointer mt-4"
-                                >
-                                    <span className="material-symbols-outlined">play_arrow</span>
-                                    Start Practice Session
-                                </button>
+                                {loading ? (
+                                    <div className="flex flex-col items-center gap-3 mt-4">
+                                        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                                        <p className="text-sm text-text-muted font-body-sm">Initializing your practice session...</p>
+                                    </div>
+                                ) : (
+                                    <button 
+                                        onClick={startSession}
+                                        className="bg-primary text-on-primary font-bold px-8 py-3.5 rounded-full hover:scale-105 transition-all shadow-[0_0_15px_rgba(173,198,255,0.25)] flex items-center gap-2 cursor-pointer mt-4"
+                                    >
+                                        <span className="material-symbols-outlined">play_arrow</span>
+                                        Start Practice Session
+                                    </button>
+                                )}
                             </div>
                         ) : (
                             <>
