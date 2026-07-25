@@ -42,7 +42,7 @@ const generateReportSchema = z.object({
 
 const startPracticeSchema = z.object({
     body: z.object({
-        reportId: objectIdSchema
+        reportId: objectIdSchema.optional().nullable()
     }).strict()
 });
 
