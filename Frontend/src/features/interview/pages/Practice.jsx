@@ -42,6 +42,12 @@ const Practice = () => {
     const [targetKeywords, setTargetKeywords] = useState(["stakeholders", "alignment", "data-driven", "scalability", "agile", "consistency", "latency", "testing"])
 
     const responseStartTimeRef = useRef(null)
+    const isListeningRef = useRef(isListening)
+    const isRecognitionActiveRef = useRef(false)
+
+    useEffect(() => {
+        isListeningRef.current = isListening;
+    }, [isListening]);
 
     // Dynamic target keywords generation based on current question topic
     useEffect(() => {
@@ -73,6 +79,11 @@ const Practice = () => {
         rec.interimResults = true;
         rec.lang = 'en-US';
 
+        rec.onstart = () => {
+            isRecognitionActiveRef.current = true;
+            console.log("Speech recognition active.");
+        };
+
         rec.onresult = (event) => {
             let transcript = '';
             for (let i = 0; i < event.results.length; i++) {
@@ -90,36 +101,52 @@ const Practice = () => {
         };
 
         rec.onend = () => {
+            isRecognitionActiveRef.current = false;
+            console.log("Speech recognition inactive.");
             // Keep listening if state is still true
-            if (isListening) {
-                try {
-                    rec.start();
-                } catch (err) {
-                    // Ignore start errors on boundary
-                }
+            if (isListeningRef.current) {
+                setTimeout(() => {
+                    if (isListeningRef.current && !isRecognitionActiveRef.current) {
+                        try {
+                            rec.start();
+                        } catch (err) {
+                            // Ignore start errors on boundary
+                        }
+                    }
+                }, 250);
             }
         };
 
         setRecognition(rec);
-    }, [isListening]);
+
+        return () => {
+            try {
+                rec.stop();
+            } catch (err) {
+                // Ignore cleanup errors
+            }
+        };
+    }, []);
 
     // Manage starting/stopping the speech recognition engine based on isListening state
     useEffect(() => {
         if (!recognition) return;
 
         if (isListening) {
-            try {
-                recognition.start();
-                console.log("Speech recognition active.");
-            } catch (e) {
-                console.error("Error starting speech recognition:", e);
+            if (!isRecognitionActiveRef.current) {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error("Error starting speech recognition:", e);
+                }
             }
         } else {
-            try {
-                recognition.stop();
-                console.log("Speech recognition inactive.");
-            } catch (e) {
-                // Ignore if recognition already stopped
+            if (isRecognitionActiveRef.current) {
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    // Ignore if recognition already stopped
+                }
             }
         }
     }, [isListening, recognition]);
