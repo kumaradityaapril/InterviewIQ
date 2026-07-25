@@ -653,11 +653,40 @@ async function parseResumeToForm({ resume }) {
     };
 }
 
+async function transcribeAudioService({ audioBuffer, mimetype }) {
+    const keys = getApiKeys();
+    if (keys.length > 0) {
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            try {
+                const aiInstance = new GoogleGenAI({ apiKey: key });
+                const response = await aiInstance.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: [
+                        {
+                            inlineData: {
+                                mimeType: mimetype || "audio/webm",
+                                data: audioBuffer.toString("base64")
+                            }
+                        },
+                        "Please provide an accurate, word-for-word text transcription of the spoken content in this audio file. Do not add any summary, explanation, or metadata. Return only the plain transcription text."
+                    ]
+                });
+                return response.text.trim();
+            } catch (err) {
+                console.error(`Gemini transcribeAudioService failed on key [${maskKey(key)}]:`, err.message || err);
+            }
+        }
+    }
+    throw new Error("Speech-to-Text service is currently unavailable.");
+}
+
 module.exports = {
     generateInterviewReport,
     generateFirstQuestion,
     evaluateResponseAndNextQuestion,
     generateTailoredResume,
     generateCustomTailoredResume,
-    parseResumeToForm
+    parseResumeToForm,
+    transcribeAudioService
 };

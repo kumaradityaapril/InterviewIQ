@@ -1,5 +1,5 @@
 const pdfParse = require("pdf-parse")
-const { generateInterviewReport, generateFirstQuestion, evaluateResponseAndNextQuestion, generateTailoredResume, generateCustomTailoredResume, parseResumeToForm } = require("../services/ai.service")
+const { generateInterviewReport, generateFirstQuestion, evaluateResponseAndNextQuestion, generateTailoredResume, generateCustomTailoredResume, parseResumeToForm, transcribeAudioService } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
 const practiceSessionModel = require("../models/practiceSession.model")
 
@@ -248,6 +248,24 @@ async function parseResumeToFormController(req, res) {
     }
 }
 
+async function transcribeAudioController(req, res) {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No audio file provided." });
+        }
+
+        const transcription = await transcribeAudioService({
+            audioBuffer: req.file.buffer,
+            mimetype: req.file.mimetype
+        });
+
+        res.status(200).json({ text: transcription });
+    } catch (error) {
+        console.error("Error in transcribeAudioController:", error);
+        res.status(500).json({ message: error.message || "Failed to transcribe audio due to a server error." });
+    }
+}
+
 module.exports = {
     generateInterviewReportController,
     getUserReportsController,
@@ -258,5 +276,6 @@ module.exports = {
     getPracticeSessionsController,
     tailorResumeController,
     tailorCustomResumeController,
-    parseResumeToFormController
+    parseResumeToFormController,
+    transcribeAudioController
 }

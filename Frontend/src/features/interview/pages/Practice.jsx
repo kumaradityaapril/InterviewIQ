@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router'
-import { startPracticeSession, respondPracticeQuestion, savePracticeSession } from '../services/interview.api'
+import { startPracticeSession, respondPracticeQuestion, savePracticeSession, transcribeAudio } from '../services/interview.api'
 import { useAuth } from '../../auth/hooks/useAuth'
 import Tech3DBackground from '../components/Tech3DBackground'
 import Tilt3D from '../components/Tilt3D'
@@ -54,6 +54,67 @@ const Practice = () => {
     useEffect(() => {
         isAiSpeakingRef.current = isAiSpeaking;
     }, [isAiSpeaking]);
+
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+    const [isRecordingAudio, setIsRecordingAudio] = useState(false);
+    const [isTranscribing, setIsTranscribing] = useState(false);
+
+    const startAudioRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioChunksRef.current = [];
+            
+            // WebM recording format is natively supported by Chrome, Firefox, Safari and Gemini!
+            const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+            
+            recorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+            
+            recorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                if (audioBlob.size < 1000) return; // Ignore very small clips
+                
+                try {
+                    setIsTranscribing(true);
+                    const formData = new FormData();
+                    formData.append("audio", audioBlob, "response.webm");
+                    
+                    const data = await transcribeAudio(formData);
+                    if (data && data.text) {
+                        setUserResponse(prev => {
+                            const separator = prev.trim() ? ' ' : '';
+                            return prev.trim() + separator + data.text.trim();
+                        });
+                        finalizedResponseRef.current = (finalizedResponseRef.current.trim() + ' ' + data.text.trim()).trim();
+                    }
+                } catch (err) {
+                    console.error("Audio transcription API error:", err);
+                } finally {
+                    setIsTranscribing(false);
+                }
+                
+                // Explicitly stop all microphone stream tracks to clean up the browser device lock indicator
+                stream.getTracks().forEach(track => track.stop());
+            };
+            
+            mediaRecorderRef.current = recorder;
+            recorder.start();
+            setIsRecordingAudio(true);
+        } catch (err) {
+            console.error("Failed to start MediaRecorder audio capture:", err);
+        }
+    };
+
+    const stopAudioRecording = () => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+            mediaRecorderRef.current.stop();
+            setIsRecordingAudio(false);
+        }
+    };
 
     // Dynamic target keywords generation based on current question topic
     useEffect(() => {
@@ -146,12 +207,11 @@ const Practice = () => {
         };
     }, []);
 
-    // Manage starting/stopping the speech recognition engine based on isListening state
+    // Manage starting/stopping the speech recognition and media recorder based on isListening state
     useEffect(() => {
-        if (!recognition) return;
-
         if (isListening) {
-            if (!isRecognitionActiveRef.current) {
+            startAudioRecording();
+            if (recognition && !isRecognitionActiveRef.current) {
                 try {
                     recognition.start();
                 } catch (e) {
@@ -159,7 +219,8 @@ const Practice = () => {
                 }
             }
         } else {
-            if (isRecognitionActiveRef.current) {
+            stopAudioRecording();
+            if (recognition && isRecognitionActiveRef.current) {
                 try {
                     recognition.stop();
                 } catch (e) {
@@ -834,15 +895,21 @@ const Practice = () => {
                                                 : "* Microphone is inactive. Click the microphone button below to start transcribing or type your answer directly."}
                                         </p>
                                         <textarea 
-                                            disabled={isThinking}
+                                            disabled={isThinking || isTranscribing}
                                             className="w-full flex-grow bg-surface-container/50 border border-border-subtle rounded-lg p-6 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-0 transition-all resize-none placeholder:text-outline/40 custom-scrollbar leading-relaxed"
-                                            placeholder={isThinking ? "Please wait while the AI evaluates your answer..." : "Start speaking your answer here..."}
+                                            placeholder={isThinking ? "Please wait while the AI evaluates your answer..." : isTranscribing ? "Gemini is transcribing your spoken response..." : "Start speaking your answer here..."}
                                             value={userResponse}
                                             onChange={(e) => {
                                                 setUserResponse(e.target.value);
                                                 finalizedResponseRef.current = e.target.value;
                                             }}
                                         ></textarea>
+                                        {isTranscribing && (
+                                            <div className="bg-primary/5 border border-primary/10 rounded-lg p-3 text-xs text-primary flex items-center gap-2 animate-pulse mt-2">
+                                                <span className="material-symbols-outlined text-sm animate-spin">sync</span>
+                                                <span>Gemini AI is transcribing your spoken audio response...</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -897,9 +964,9 @@ const Practice = () => {
 
                                         <button 
                                             onClick={handleNextQuestion}
-                                            disabled={!userResponse.trim() || isThinking}
+                                            disabled={!userResponse.trim() || isThinking || isTranscribing}
                                             className={`px-8 h-14 rounded-full flex items-center justify-center font-bold transition-all active:scale-95 gap-2 cursor-pointer ${
-                                                userResponse.trim() && !isThinking
+                                                userResponse.trim() && !isThinking && !isTranscribing
                                                     ? "bg-primary text-on-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(173,198,255,0.15)]"
                                                     : "bg-surface-container-high text-text-muted border border-border-subtle cursor-not-allowed"
                                             }`}
@@ -907,6 +974,11 @@ const Practice = () => {
                                             {isThinking ? (
                                                 <>
                                                     <span>ANALYZING ANSWER...</span>
+                                                    <span className="w-4 h-4 border-2 border-text-muted border-t-white rounded-full animate-spin"></span>
+                                                </>
+                                            ) : isTranscribing ? (
+                                                <>
+                                                    <span>TRANSCRIBING...</span>
                                                     <span className="w-4 h-4 border-2 border-text-muted border-t-white rounded-full animate-spin"></span>
                                                 </>
                                             ) : (

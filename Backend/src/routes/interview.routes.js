@@ -13,6 +13,12 @@ const {
     paramsIdSchema
 } = require("../validation/schemas")
 
+const multer = require("multer");
+const audioUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 15 * 1024 * 1024 } // 15MB limit
+}).single("audio");
+
 const interviewRouter = express.Router()
 
 interviewRouter.use(authedRateLimiter)
@@ -23,6 +29,7 @@ interviewRouter.post("/practice/start",authMiddleware.authUser,validate(startPra
 interviewRouter.post("/practice/respond",authMiddleware.authUser,validate(respondPracticeSchema),interviewController.respondPracticeQuestionController)
 interviewRouter.post("/practice/save",authMiddleware.authUser,validate(savePracticeSchema),interviewController.savePracticeSessionController)
 interviewRouter.get("/practice/history",authMiddleware.authUser,interviewController.getPracticeSessionsController)
+interviewRouter.post("/practice/transcribe",authMiddleware.authUser,audioUpload,interviewController.transcribeAudioController)
 interviewRouter.get("/:id",authMiddleware.authUser,validate(paramsIdSchema),interviewController.getReportByIdController)
 interviewRouter.get("/reports/:id/tailor",authMiddleware.authUser,validate(paramsIdSchema),interviewController.tailorResumeController)
 interviewRouter.post("/resume/tailor-custom",authMiddleware.authUser,validate(tailorCustomResumeSchema),interviewController.tailorCustomResumeController)

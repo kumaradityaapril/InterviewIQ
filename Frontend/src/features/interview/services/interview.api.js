@@ -128,3 +128,18 @@ export async function parseResumeToForm(id) {
         throw err;
     }
 }
+
+export async function transcribeAudio(formData) {
+    try {
+        const response = await axios.post(`${API_URL}/practice/transcribe`, formData, {
+            withCredentials: true,
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        return response.data;
+    } catch (err) {
+        console.error("Error transcribing audio:", err);
+        throw err;
+    }
+}
