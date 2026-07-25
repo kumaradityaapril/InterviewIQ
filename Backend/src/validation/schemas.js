@@ -45,18 +45,36 @@ const startPracticeSchema = z.object({
         reportId: objectIdSchema.optional().nullable()
     }).strict()
 });
-
 const respondPracticeSchema = z.object({
     body: z.object({
-        sessionId: objectIdSchema,
-        question: z.string().min(1, "Question cannot be empty"),
-        userAnswer: z.string().min(1, "Answer cannot be empty").max(10000)
+        reportId: objectIdSchema.optional().nullable(),
+        currentQuestion: z.string().min(1, "Question cannot be empty"),
+        candidateAnswer: z.string().min(0).max(10000).optional().or(z.literal("")),
+        history: z.array(
+            z.object({
+                role: z.string(),
+                content: z.string()
+            })
+        ).optional(),
+        resume: z.string().optional(),
+        jobdescription: z.string().optional(),
+        selfdescription: z.string().optional().nullable()
     }).strict()
 });
 
 const savePracticeSchema = z.object({
     body: z.object({
-        sessionId: objectIdSchema
+        reportId: objectIdSchema.optional().nullable(),
+        scorecard: z.array(
+            z.object({
+                question: z.string(),
+                response: z.string().optional().or(z.literal("")),
+                score: z.number().int().min(0).max(100),
+                feedback: z.string().optional(),
+                keywords: z.array(z.string()).optional()
+            })
+        ).min(1, "Scorecard must have at least one question evaluation"),
+        overallScore: z.number().int().min(0).max(100)
     }).strict()
 });
 
