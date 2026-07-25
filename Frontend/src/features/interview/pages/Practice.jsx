@@ -161,36 +161,42 @@ const Practice = () => {
         // Stop listening while AI is speaking to prevent transcribing the speaker audio
         setIsListening(false);
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        
-        // Load voices dynamically
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
-                             || voices.find(v => v.lang.startsWith('en')) 
-                             || voices[0];
-                             
-        if (preferredVoice) {
-            utterance.voice = preferredVoice;
-        }
-        
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        
-        utterance.onstart = () => {
-            setIsAiSpeaking(true);
-        };
-        
-        utterance.onend = () => {
-            setIsAiSpeaking(false);
-            // Automatically start listening after question completes
-            setIsListening(true);
-        };
-        
-        utterance.onerror = () => {
-            setIsAiSpeaking(false);
-        };
+        // Add 150ms delay to allow the browser's SpeechSynthesis to successfully clear its queue
+        setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Load voices dynamically
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
+                                 || voices.find(v => v.lang.startsWith('en')) 
+                                 || voices[0];
+                                 
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            
+            utterance.onstart = () => {
+                setIsAiSpeaking(true);
+            };
+            
+            utterance.onend = () => {
+                setIsAiSpeaking(false);
+                // Automatically start listening after question completes
+                setIsListening(true);
+            };
+            
+            utterance.onerror = (e) => {
+                console.error("Speech Synthesis Error:", e);
+                setIsAiSpeaking(false);
+                // Automatically fall back to listening so user doesn't get stuck
+                setIsListening(true);
+            };
 
-        window.speechSynthesis.speak(utterance);
+            window.speechSynthesis.speak(utterance);
+        }, 150);
     };
 
     // Clean up speech synthesis & recognition on unmount

@@ -267,12 +267,23 @@ async function generateInterviewReport({ resume,selfdescription,jobdescription }
 }
 
 async function generateFirstQuestion({ resume, selfdescription, jobdescription }) {
+    const focusAreas = [
+        "core engineering experience and past projects",
+        "specific programming languages or databases listed on their resume",
+        "system design, API structure, or scaling solutions",
+        "architectural patterns and database index optimizations",
+        "behavioral scenarios and collaborative teamwork challenges"
+    ];
+    const randomArea = focusAreas[Math.floor(Math.random() * focusAreas.length)];
+    const randomSalt = Math.random().toString(36).substring(7);
+
     const prompt = `You are a professional interviewer starting a technical or behavioral interview for this position.
     Job Description: ${jobdescription}
     Candidate Resume: ${resume}
     Candidate Self Description: ${selfdescription}
     
-    Generate the first highly relevant, professional interview question to ask the candidate. The question should be conversational, specific, and challenge their experience.
+    To keep the interview dynamic and unique, focus your opening question on the candidate's ${randomArea} (unique session seed: ${randomSalt}).
+    Generate the first highly relevant, professional interview question to ask the candidate. The question must be conversational, specific, challenge their experience, and directly address this focus area. Do not repeat standard introductory pleasantries.
     `;
 
     const keys = getApiKeys();
@@ -296,8 +307,15 @@ async function generateFirstQuestion({ resume, selfdescription, jobdescription }
         }
     }
     
+    const fallbacks = [
+        "Can you start by describing your core experience with full-stack development, and how you typically design RESTful APIs?",
+        "Could you walk me through one of your most challenging technical projects and explain your key architecture decisions?",
+        "How do you approach learning a new technology or framework under tight delivery deadlines?",
+        "What strategies do you use to locate and resolve performance bottlenecks in web applications?",
+        "Can you describe your experience working in an agile environment and managing stakeholder expectations?"
+    ];
     return {
-        question: "Can you start by describing your core experience with full-stack development, and how you typically design RESTful APIs?"
+        question: fallbacks[Math.floor(Math.random() * fallbacks.length)]
     };
 }
 
