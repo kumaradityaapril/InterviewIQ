@@ -146,8 +146,11 @@ const Practice = () => {
         rec.interimResults = true;
         rec.lang = 'en-US';
 
+        let errorCount = 0;
+
         rec.onstart = () => {
             isRecognitionActiveRef.current = true;
+            errorCount = 0;
             console.log("Speech recognition active.");
         };
 
@@ -173,8 +176,9 @@ const Practice = () => {
 
         rec.onerror = (e) => {
             console.error("Speech Recognition Error:", e);
-            if (e.error === 'not-allowed') {
-                alert("Microphone permission was denied. Please allow microphone access in your browser settings.");
+            errorCount++;
+            if (e.error === 'not-allowed' || errorCount > 3) {
+                console.warn("Stopping Speech Recognition restarts due to persistent errors.");
                 setIsListening(false);
             }
         };
