@@ -65,8 +65,19 @@ const Practice = () => {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             audioChunksRef.current = [];
             
-            // WebM recording format is natively supported by Chrome, Firefox, Safari and Gemini!
-            const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+            // Dynamically select mimeType based on browser capabilities (vital for Safari and mobile support)
+            let options = {};
+            if (typeof MediaRecorder.isTypeSupported === 'function') {
+                if (MediaRecorder.isTypeSupported('audio/webm')) {
+                    options = { mimeType: 'audio/webm' };
+                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                    options = { mimeType: 'audio/mp4' };
+                } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+                    options = { mimeType: 'audio/ogg' };
+                }
+            }
+            
+            const recorder = new MediaRecorder(stream, options);
             
             recorder.ondataavailable = (event) => {
                 if (event.data.size > 0) {
@@ -75,13 +86,14 @@ const Practice = () => {
             };
             
             recorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                const mime = recorder.mimeType || 'audio/webm';
+                const audioBlob = new Blob(audioChunksRef.current, { type: mime });
                 if (audioBlob.size < 1000) return; // Ignore very small clips
                 
                 try {
                     setIsTranscribing(true);
                     const formData = new FormData();
-                    formData.append("audio", audioBlob, "response.webm");
+                    formData.append("audio", audioBlob, mime.includes('mp4') ? 'response.mp4' : mime.includes('ogg') ? 'response.ogg' : 'response.webm');
                     
                     const data = await transcribeAudio(formData);
                     if (data && data.text) {
@@ -106,6 +118,8 @@ const Practice = () => {
             setIsRecordingAudio(true);
         } catch (err) {
             console.error("Failed to start MediaRecorder audio capture:", err);
+            alert("Unable to access your microphone. Please make sure microphone permission is allowed in your browser settings and try again.");
+            setIsListening(false);
         }
     };
 
