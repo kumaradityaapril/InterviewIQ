@@ -664,12 +664,19 @@ async function transcribeAudioService({ audioBuffer, mimetype }) {
                     model: "gemini-2.5-flash",
                     contents: [
                         {
-                            inlineData: {
-                                mimeType: mimetype || "audio/webm",
-                                data: audioBuffer.toString("base64")
-                            }
-                        },
-                        "Please provide an accurate, word-for-word text transcription of the spoken content in this audio file. Do not add any summary, explanation, or metadata. Return only the plain transcription text."
+                            role: "user",
+                            parts: [
+                                {
+                                    inlineData: {
+                                        mimeType: mimetype || "audio/webm",
+                                        data: audioBuffer.toString("base64")
+                                    }
+                                },
+                                {
+                                    text: "Please provide an accurate, word-for-word text transcription of the spoken content in this audio file. Do not add any summary, explanation, or metadata. Return only the plain transcription text."
+                                }
+                            ]
+                        }
                     ]
                 });
                 return response.text.trim();
