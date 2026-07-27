@@ -104,7 +104,7 @@ const Practice = () => {
                         finalizedResponseRef.current = (finalizedResponseRef.current.trim() + ' ' + data.text.trim()).trim();
                     }
                 } catch (err) {
-                    console.error("Audio transcription API error:", err);
+                    console.error("Audio transcription API error:", err.response?.data?.message || err.message, err);
                 } finally {
                     setIsTranscribing(false);
                 }

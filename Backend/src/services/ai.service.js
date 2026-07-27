@@ -654,6 +654,7 @@ async function parseResumeToForm({ resume }) {
 }
 
 async function transcribeAudioService({ audioBuffer, mimetype }) {
+    const cleanMime = mimetype ? mimetype.split(";")[0].trim() : "audio/webm";
     const keys = getApiKeys();
     if (keys.length > 0) {
         for (let i = 0; i < keys.length; i++) {
@@ -668,7 +669,7 @@ async function transcribeAudioService({ audioBuffer, mimetype }) {
                             parts: [
                                 {
                                     inlineData: {
-                                        mimeType: mimetype || "audio/webm",
+                                        mimeType: cleanMime,
                                         data: audioBuffer.toString("base64")
                                     }
                                 },
