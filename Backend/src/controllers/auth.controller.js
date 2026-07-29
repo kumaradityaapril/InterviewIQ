@@ -45,8 +45,7 @@ async function registerUserController(req,res){
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 24 * 60 * 60 * 1000
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
         })
 
         await recordAuthSuccess(req.ip, email);
@@ -106,8 +105,7 @@ async function loginUserController(req,res) {
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 24 * 60 * 60 * 1000
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
         })
         await recordAuthSuccess(req.ip, email);
 
@@ -228,8 +226,7 @@ async function googleAuthController(req, res) {
         res.cookie("token", jwtToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 24 * 60 * 60 * 1000
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
         });
         await recordAuthSuccess(req.ip, user.email);
 

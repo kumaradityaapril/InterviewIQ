@@ -12,6 +12,7 @@ export const useAuth = () => {
             const data = await login({email,password})
             if (data && data.user) {
                 setUser(data.user)
+                sessionStorage.setItem("authSessionActive", "true");
                 return { success: true }
             }
             return { success: false, error: data?.message || "Login failed" }
@@ -29,6 +30,7 @@ export const useAuth = () => {
             const data = await register({username,email,password})
             if (data && data.user) {
                 setUser(data.user)
+                sessionStorage.setItem("authSessionActive", "true");
                 return { success: true }
             }
             return { success: false, error: data?.message || "Registration failed" }
@@ -45,6 +47,7 @@ export const useAuth = () => {
         try {
             await logout()
             setUser(null)
+            sessionStorage.removeItem("authSessionActive");
         } catch (err) {
             console.error(err)
         } finally {
@@ -58,6 +61,7 @@ export const useAuth = () => {
             const data = await googleLogin(token)
             if (data && data.user) {
                 setUser(data.user)
+                sessionStorage.setItem("authSessionActive", "true");
                 return { success: true }
             }
             return { success: false, error: data?.message || "Google Authentication failed" }
@@ -71,16 +75,30 @@ export const useAuth = () => {
 
     useEffect(()=>{
         const getAndSetUser = async() => {
+            const sessionActive = sessionStorage.getItem("authSessionActive");
+            if (!sessionActive) {
+                try {
+                    await logout();
+                } catch (e) {
+                    // Ignore errors during silent cleanup
+                }
+                setUser(null);
+                setLoading(false);
+                return;
+            }
+
             try {
                 const data = await getMe()
                 if (data && data.user) {
                     setUser(data.user)
                 } else {
                     setUser(null)
+                    sessionStorage.removeItem("authSessionActive");
                 }
             } catch (err) {
                 console.error("Session restoration failed:", err)
                 setUser(null)
+                sessionStorage.removeItem("authSessionActive");
             } finally {
                 setLoading(false)
             }
