@@ -164,7 +164,6 @@ const Home = () => {
                 <section className="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center pt-4">
                     <div className="md:col-span-8 space-y-2">
                         <h1 className="font-headline-lg text-4xl text-on-surface font-extrabold">Welcome, {user?.username || "Candidate"}</h1>
-                        <p className="text-text-muted font-body-md">Your interview readiness has increased this week. Analyze a new role to get started.</p>
                     </div>
                     <div className="md:col-span-4 flex justify-end">
                         <div className="flex items-center gap-4 bg-surface-container border border-border-subtle p-4 rounded-lg">
